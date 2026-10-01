@@ -10,6 +10,7 @@ const pino = require('pino');
 const QRCode = require('qrcode');
 const fs = require('fs');
 const path = require('path');
+const db = require('./db');
 
 class WhatsAppManager {
   constructor() {
@@ -82,6 +83,37 @@ class WhatsAppManager {
       });
 
       this.sock.ev.on('creds.update', saveCreds);
+
+      // Guardar mensajes entrantes de clientes en la base de datos
+      this.sock.ev.on('messages.upsert', async (m) => {
+        try {
+          if (m.type === 'notify') {
+            for (const msg of m.messages) {
+              if (!msg.key.fromMe) {
+                const text = msg.message?.conversation ||
+                             msg.message?.extendedTextMessage?.text ||
+                             msg.message?.imageMessage?.caption || '';
+                const remoteJid = msg.key.remoteJid;
+                const senderName = msg.pushName || 'Cliente';
+
+                if (text && remoteJid && !remoteJid.includes('@g.us')) {
+                  console.log(`[WhatsApp] 💬 Nuevo mensaje recibido de ${senderName} (${remoteJid}): "${text}"`);
+                  await db.saveMessage({
+                    id: msg.key.id,
+                    remoteJid,
+                    fromMe: false,
+                    senderName,
+                    messageText: text,
+                    timestamp: msg.messageTimestamp ? new Date(Number(msg.messageTimestamp) * 1000) : new Date()
+                  });
+                }
+              }
+            }
+          }
+        } catch (msgErr) {
+          console.error('[WhatsApp] Error procesando mensaje entrante:', msgErr);
+        }
+      });
 
       this.sock.ev.on('connection.update', async (update) => {
         const { connection, lastDisconnect, qr } = update;
@@ -218,10 +250,23 @@ class WhatsAppManager {
       }
 
       const result = await this.sock.sendMessage(jid, { text });
+      const messageId = result?.key?.id;
+
+      // Guardar el mensaje saliente en PostgreSQL
+      await db.saveMessage({
+        id: messageId,
+        remoteJid: jid,
+        phone: to,
+        fromMe: true,
+        senderName: 'Aura Web',
+        messageText: text,
+        timestamp: new Date()
+      });
+
       return {
         success: true,
         jid,
-        messageId: result?.key?.id,
+        messageId,
         timestamp: new Date().toISOString()
       };
     } catch (err) {

@@ -52,6 +52,7 @@ class Database {
     if (!this.pool) return;
 
     const schemaQuery = `
+      -- 1. Tabla de Prospectos de Campañas
       CREATE TABLE IF NOT EXISTS prospects (
         id VARCHAR(64) PRIMARY KEY,
         business VARCHAR(255) NOT NULL,
@@ -69,6 +70,7 @@ class Database {
         updated_at TIMESTAMPTZ DEFAULT NOW()
       );
 
+      -- 2. Tabla de Logs de Auditoría y Estado de Campañas
       CREATE TABLE IF NOT EXISTS campaign_logs (
         id BIGSERIAL PRIMARY KEY,
         log_type VARCHAR(20),
@@ -76,16 +78,28 @@ class Database {
         details JSONB,
         created_at TIMESTAMPTZ DEFAULT NOW()
       );
+
+      -- 3. Tabla de Mensajes Enviados y Recibidos (Historial Completo de Chats)
+      CREATE TABLE IF NOT EXISTS messages (
+        id VARCHAR(128) PRIMARY KEY,
+        remote_jid VARCHAR(100) NOT NULL,
+        phone VARCHAR(50),
+        from_me BOOLEAN NOT NULL DEFAULT FALSE,
+        sender_name VARCHAR(255),
+        message_text TEXT,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      );
     `;
 
     try {
       await this.pool.query(schemaQuery);
-      console.log('[Database] ✅ Tablas "prospects" y "campaign_logs" verificadas/creadas correctamente.');
+      console.log('[Database] ✅ Tablas "prospects", "campaign_logs" y "messages" listas en PostgreSQL.');
     } catch (err) {
       console.error('[Database] Error ejecutando migraciones:', err.message);
     }
   }
 
+  // === PROSPECTS ===
   async getAllProspects() {
     if (!this.isConnected || !this.pool) return null;
     try {
@@ -165,6 +179,45 @@ class Database {
     }
   }
 
+  // === MESSAGES (ENVIADOS Y RECIBIDOS) ===
+  async saveMessage(msg) {
+    if (!this.isConnected || !this.pool) return false;
+    const query = `
+      INSERT INTO messages (id, remote_jid, phone, from_me, sender_name, message_text, created_at)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      ON CONFLICT (id) DO NOTHING;
+    `;
+    const cleanPhone = msg.remoteJid ? msg.remoteJid.split('@')[0].replace(/[^\d]/g, '') : msg.phone;
+    const values = [
+      msg.id || 'msg_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+      msg.remoteJid || `${cleanPhone}@s.whatsapp.net`,
+      cleanPhone,
+      Boolean(msg.fromMe),
+      msg.senderName || (msg.fromMe ? 'Aura Web' : 'Cliente'),
+      msg.messageText || msg.text || '',
+      msg.timestamp ? new Date(msg.timestamp) : new Date()
+    ];
+    try {
+      await this.pool.query(query, values);
+      return true;
+    } catch (err) {
+      console.error('[Database] Error guardando mensaje en DB:', err.message);
+      return false;
+    }
+  }
+
+  async getRecentMessages(limit = 50) {
+    if (!this.isConnected || !this.pool) return [];
+    try {
+      const res = await this.pool.query('SELECT * FROM messages ORDER BY created_at DESC LIMIT $1', [limit]);
+      return res.rows;
+    } catch (err) {
+      console.error('[Database] Error obteniendo mensajes:', err.message);
+      return [];
+    }
+  }
+
+  // === LOGS ===
   async insertLog(type, message, details = {}) {
     if (!this.isConnected || !this.pool) return;
     try {
@@ -173,7 +226,7 @@ class Database {
         [type, message, JSON.stringify(details)]
       );
     } catch (err) {
-      // Silencioso para no romper logs
+      // Silencioso para no interferir
     }
   }
 }
