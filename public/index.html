@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-950 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wally Bot | Aura Web WhatsApp Automation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          },
+          colors: {
+            aura: {
+              50: '#ecfdf5',
+              400: '#34d399',
+              500: '#10b981',
+              600: '#059669',
+              900: '#064e3b',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-flex;
+      vertical-align: middle;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+  </style>
+</head>
+
+<body class="h-full flex flex-col font-sans antialiased bg-slate-950 text-slate-100 selection:bg-emerald-500 selection:text-slate-950">
+
+  <!-- TOP HEADER -->
+  <header class="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-40 px-4 sm:px-8 py-3.5 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-cyan-400 p-0.5 shadow-lg shadow-emerald-500/20 flex items-center justify-center">
+        <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+          <span class="material-symbols-outlined text-emerald-400 text-2xl">smart_toy</span>
+        </div>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 class="font-bold text-lg tracking-tight text-white flex items-center gap-1.5">
+            Wally Bot
+            <span class="text-[10px] uppercase font-extrabold tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full">v1.0 Baileys</span>
+          </h1>
+        </div>
+        <p class="text-xs text-slate-400">Motor de Prospección & WhatsApp Outreach para Aura Web</p>
+      </div>
+    </div>
+
+    <!-- Live Status Indicator -->
+    <div class="flex items-center gap-3">
+      <div id="connectionPill" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-xs font-medium text-slate-300 transition-all duration-300">
+        <span class="relative flex h-2.5 w-2.5">
+          <span id="statusPing" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+          <span id="statusDot" class="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
+        </span>
+        <span id="statusLabel">Verificando conexión...</span>
+      </div>
+
+      <button onclick="checkStatus()" title="Actualizar estado" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition">
+        <span class="material-symbols-outlined text-[18px]">refresh</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- NAVIGATION TABS -->
+  <div class="border-b border-slate-800 bg-slate-900/30 px-4 sm:px-8">
+    <nav class="flex space-x-2 sm:space-x-4 max-w-7xl mx-auto" aria-label="Tabs">
+      <button onclick="switchTab('tab-connection')" id="nav-tab-connection" class="tab-btn px-4 py-3 text-sm font-semibold border-b-2 border-emerald-500 text-emerald-400 flex items-center gap-2">
+        <span class="material-symbols-outlined text-[18px]">qr_code_scanner</span>
+        Conexión WhatsApp
+      </button>
+      <button onclick="switchTab('tab-campaign')" id="nav-tab-campaign" class="tab-btn px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2">
+        <span class="material-symbols-outlined text-[18px]">rocket_launch</span>
+        Campaña de Prospección
+        <span id="tabProspectsBadge" class="text-[11px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full font-mono">0</span>
+      </button>
+      <button onclick="switchTab('tab-single')" id="nav-tab-single" class="tab-btn px-4 py-3 text-sm font-semibold border-b-2 border-transparent text-slate-400 hover:text-slate-200 flex items-center gap-2">
+        <span class="material-symbols-outlined text-[18px]">send</span>
+        Envío Individual / Test
+      </button>
+    </nav>
+  </div>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-8 space-y-6">
+
+    <!-- ================= TAB 1: CONEXIÓN WHATSAPP ================= -->
+    <section id="tab-connection" class="tab-content space-y-6">
+      
+      <!-- Status Card Box -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+
+        <!-- Left Column: QR & Status Action -->
+        <div class="md:col-span-6 bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col items-center text-center justify-center relative overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-b from-emerald-500/5 via-transparent to-transparent pointer-events-none"></div>
+
+          <!-- State 1: Connecting / Generating QR -->
+          <div id="qrLoadingState" class="py-12 flex flex-col items-center space-y-4">
+            <div class="w-12 h-12 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin"></div>
+            <p class="text-sm font-medium text-slate-300">Conectando con el motor Baileys...</p>
+            <p class="text-xs text-slate-500 max-w-xs">Generando credenciales y preparando el código QR de WhatsApp.</p>
+          </div>
+
+          <!-- State 2: QR Ready for Scanning -->
+          <div id="qrReadyState" class="hidden flex flex-col items-center space-y-4 py-4">
+            <div class="relative p-3 bg-white rounded-2xl shadow-2xl border-4 border-slate-800 group">
+              <img id="qrImage" src="" alt="QR WhatsApp" class="w-64 h-64 object-contain rounded-lg">
+            </div>
+
+            <div class="space-y-1">
+              <h3 class="text-base font-bold text-white flex items-center justify-center gap-1.5">
+                <span class="material-symbols-outlined text-emerald-400">photo_camera</span>
+                Escaneá el código QR con WhatsApp
+              </h3>
+              <p class="text-xs text-slate-400">Abrí WhatsApp en tu celular &rarr; Dispositivos vinculados &rarr; Vincular dispositivo</p>
+            </div>
+
+            <div class="text-[11px] text-amber-400/90 bg-amber-500/10 border border-amber-500/20 px-3 py-1.5 rounded-lg flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[15px]">timer</span>
+              El QR se actualiza automáticamente cada 30 segundos
+            </div>
+          </div>
+
+          <!-- State 3: WhatsApp Connected -->
+          <div id="qrConnectedState" class="hidden flex flex-col items-center space-y-4 py-6 w-full">
+            <div class="w-20 h-20 rounded-full bg-emerald-500/20 border-2 border-emerald-500/50 flex items-center justify-center text-emerald-400 shadow-xl shadow-emerald-500/10">
+              <span class="material-symbols-outlined text-4xl">check_circle</span>
+            </div>
+
+            <div class="space-y-1">
+              <h3 class="text-lg font-bold text-emerald-400">¡WhatsApp Vinculado con Éxito!</h3>
+              <p class="text-xs text-slate-400">Tu número está listo para enviar mensajes de prospección.</p>
+            </div>
+
+            <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4 w-full max-w-md text-left space-y-2 text-xs">
+              <div class="flex justify-between items-center border-b border-slate-800/80 pb-2">
+                <span class="text-slate-400">Número Conectado:</span>
+                <span id="connectedPhone" class="font-mono font-bold text-slate-100">+54 9 388 ...</span>
+              </div>
+              <div class="flex justify-between items-center border-b border-slate-800/80 pb-2">
+                <span class="text-slate-400">Nombre de Sesión:</span>
+                <span id="connectedName" class="font-semibold text-slate-200">Aura Web</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-slate-400">Conectado Desde:</span>
+                <span id="connectedSince" class="text-slate-300 font-mono">-</span>
+              </div>
+            </div>
+
+            <div class="pt-2 flex flex-wrap gap-3 justify-center w-full">
+              <button onclick="handleLogout()" class="px-4 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-bold transition flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">logout</span>
+                Cerrar Sesión (Desvincular)
+              </button>
+              <button onclick="switchTab('tab-campaign')" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-slate-950 text-xs font-bold transition shadow-lg shadow-emerald-600/20 flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">rocket_launch</span>
+                Ir a Campaña de Prospección
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Column: Instrucciones y Medidas de Seguridad -->
+        <div class="md:col-span-6 space-y-4">
+          <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-4">
+            <h3 class="text-sm font-bold uppercase tracking-wider text-slate-300 flex items-center gap-2">
+              <span class="material-symbols-outlined text-emerald-400 text-lg">verified_user</span>
+              Guía de Conexión & Seguridad Anti-Ban
+            </h3>
+
+            <div class="space-y-3 text-xs text-slate-300">
+              <div class="flex items-start gap-3 bg-slate-950/60 p-3 rounded-xl border border-slate-800/60">
+                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-[11px]">1</span>
+                <div>
+                  <strong class="text-white block font-semibold">Sesión Única y Persistente</strong>
+                  Solo necesitás escanear el código QR una vez. Tus credenciales quedan guardadas de forma segura en tu PC local.
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3 bg-slate-950/60 p-3 rounded-xl border border-slate-800/60">
+                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-[11px]">2</span>
+                <div>
+                  <strong class="text-white block font-semibold">Delays y Human Typing</strong>
+                  El sistema simula que estás escribiendo en el chat y aplica pausas aleatorias de 25 a 45 segundos entre mensajes para evitar bloqueos de WhatsApp.
+                </div>
+              </div>
+
+              <div class="flex items-start gap-3 bg-slate-950/60 p-3 rounded-xl border border-slate-800/60">
+                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-[11px]">3</span>
+                <div>
+                  <strong class="text-white block font-semibold">Respuestas en Vivo</strong>
+                  Cuando los clientes te respondan, vas a ver las conversaciones directamente en la app de WhatsApp de tu celular o WhatsApp Web para contestarles y cerrar ventas en el acto.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions & Reset -->
+          <div class="bg-slate-900/40 border border-slate-800/60 rounded-2xl p-4 flex items-center justify-between text-xs">
+            <div class="text-slate-400">
+              ¿Problemas para conectar o querés cambiar de número?
+            </div>
+            <button onclick="handleLogout()" class="text-xs text-rose-400 hover:text-rose-300 font-semibold underline flex items-center gap-1">
+              Reiniciar QR
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= TAB 2: CAMPAÑA DE PROSPECCIÓN ================= -->
+    <section id="tab-campaign" class="tab-content hidden space-y-6">
+
+      <!-- Metrics / Stats Cards -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4">
+          <p class="text-xs text-slate-400 font-medium">Total Prospectos</p>
+          <p id="statTotal" class="text-2xl font-bold font-mono text-white mt-1">0</p>
+        </div>
+        <div class="bg-slate-900/80 border border-emerald-900/30 rounded-xl p-4">
+          <p class="text-xs text-emerald-400 font-medium">Enviados con Éxito</p>
+          <p id="statSent" class="text-2xl font-bold font-mono text-emerald-400 mt-1">0</p>
+        </div>
+        <div class="bg-slate-900/80 border border-amber-900/30 rounded-xl p-4">
+          <p class="text-xs text-amber-400 font-medium">Pendientes</p>
+          <p id="statPending" class="text-2xl font-bold font-mono text-amber-400 mt-1">0</p>
+        </div>
+        <div class="bg-slate-900/80 border border-rose-900/30 rounded-xl p-4">
+          <p class="text-xs text-rose-400 font-medium">Fallidos / Errores</p>
+          <p id="statFailed" class="text-2xl font-bold font-mono text-rose-400 mt-1">0</p>
+        </div>
+      </div>
+
+      <!-- Campaign Control Bar -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div id="campaignStatusIcon" class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-slate-400">
+            <span class="material-symbols-outlined text-2xl">pause</span>
+          </div>
+          <div>
+            <h3 id="campaignTitle" class="text-sm font-bold text-white">Campaña Detenida</h3>
+            <p id="campaignSubtitle" class="text-xs text-slate-400">Configurá el delay y presioná Iniciar para comenzar los envíos.</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <!-- Delay Selector -->
+          <div class="flex items-center gap-2 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs">
+            <span class="text-slate-400">Delay:</span>
+            <select id="campaignDelay" class="bg-transparent text-white font-medium focus:outline-none cursor-pointer">
+              <option value="30" class="bg-slate-900">30s (Recomendado)</option>
+              <option value="45" class="bg-slate-900">45s (Ultra Seguro)</option>
+              <option value="20" class="bg-slate-900">20s (Rápido)</option>
+            </select>
+          </div>
+
+          <!-- Buttons -->
+          <button id="btnStartCampaign" onclick="startCampaign()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold text-xs flex items-center gap-1.5 transition shadow-lg shadow-emerald-600/20">
+            <span class="material-symbols-outlined text-[18px]">play_arrow</span>
+            Iniciar Campaña
+          </button>
+          <button id="btnPauseCampaign" onclick="pauseCampaign()" class="hidden px-4 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 font-bold text-xs flex items-center gap-1.5 transition">
+            <span class="material-symbols-outlined text-[18px]">pause</span>
+            Pausar
+          </button>
+          <button id="btnResumeCampaign" onclick="resumeCampaign()" class="hidden px-4 py-2.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 font-bold text-xs flex items-center gap-1.5 transition">
+            <span class="material-symbols-outlined text-[18px]">play_arrow</span>
+            Reanudar
+          </button>
+          <button id="btnStopCampaign" onclick="stopCampaign()" class="hidden px-4 py-2.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 font-bold text-xs flex items-center gap-1.5 transition">
+            <span class="material-symbols-outlined text-[18px]">stop</span>
+            Detener
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Layout: Prospects List & Live Console Logs -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Prospects Table (Left 7 cols) -->
+        <div class="lg:col-span-7 bg-slate-900/80 border border-slate-800 rounded-2xl p-5 space-y-4 flex flex-col">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <span class="material-symbols-outlined text-emerald-400">group</span>
+              Lista de Prospectos
+            </h3>
+            <div class="flex items-center gap-2">
+              <button onclick="openAddProspectModal()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition flex items-center gap-1 border border-slate-700">
+                <span class="material-symbols-outlined text-[15px]">add</span>
+                Agregar
+              </button>
+              <button onclick="resetProspectsStatus()" title="Reiniciar estados a Pendiente" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 text-xs transition border border-slate-700">
+                <span class="material-symbols-outlined text-[15px]">restart_alt</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-y-auto max-h-[420px] custom-scrollbar border border-slate-800 rounded-xl">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-950 text-slate-400 uppercase font-mono text-[10px] sticky top-0 border-b border-slate-800">
+                <tr>
+                  <th class="p-3">Negocio / Contacto</th>
+                  <th class="p-3">Teléfono</th>
+                  <th class="p-3">Estado</th>
+                  <th class="p-3 text-right">Acción</th>
+                </tr>
+              </thead>
+              <tbody id="prospectsTableBody" class="divide-y divide-slate-800/60 font-sans">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Live Activity Log Console (Right 5 cols) -->
+        <div class="lg:col-span-5 bg-slate-950 border border-slate-800 rounded-2xl p-5 space-y-3 flex flex-col">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+            <h3 class="text-xs font-mono font-bold text-slate-300 flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              Console Activity Logs
+            </h3>
+            <span class="text-[10px] font-mono text-slate-500">Auto-scroll</span>
+          </div>
+
+          <div id="activityLogs" class="flex-1 min-h-[360px] max-h-[420px] overflow-y-auto custom-scrollbar font-mono text-[11px] space-y-2 p-2 bg-slate-950/80 rounded-lg">
+            <!-- Logs injected via JS -->
+            <div class="text-slate-500">[Sistema] Listo para iniciar prospección.</div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ================= TAB 3: ENVÍO INDIVIDUAL / TEST ================= -->
+    <section id="tab-single" class="tab-content hidden max-w-2xl mx-auto space-y-6">
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-5">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <span class="material-symbols-outlined text-emerald-400">send</span>
+            Envío de Prueba Individual
+          </h3>
+          <p class="text-xs text-slate-400">Probá la conexión enviando un mensaje directo a tu propio número o a un cliente puntual.</p>
+        </div>
+
+        <form onsubmit="handleSendSingle(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Número de Teléfono (con código de país/área):</label>
+            <input type="text" id="singlePhone" placeholder="Ej: 5493881234567 o 3881234567" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500 font-mono">
+            <span class="text-[11px] text-slate-500 mt-1 block">Para Jujuy: podés escribirlo como 549388..., 388... o +54 9 388...</span>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1.5">Mensaje a enviar:</label>
+            <textarea id="singleMessage" rows="5" required placeholder="Escribí el mensaje de prueba acá..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-emerald-500"></textarea>
+          </div>
+
+          <div class="pt-2 flex items-center justify-between">
+            <button type="button" onclick="loadTestMessageTemplate()" class="text-xs text-emerald-400 hover:underline">
+              Cargar texto de prueba
+            </button>
+
+            <button type="submit" id="btnSendSingle" class="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold text-xs transition flex items-center gap-2 shadow-lg shadow-emerald-600/20">
+              <span class="material-symbols-outlined text-[16px]">send</span>
+              Enviar Mensaje Ahora
+            </button>
+          </div>
+        </form>
+
+        <div id="singleAlert" class="hidden p-3 rounded-xl text-xs font-medium border"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: AGREGAR / EDITAR PROSPECTO -->
+  <div id="prospectModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 id="modalTitle" class="text-base font-bold text-white">Nuevo Prospecto</h3>
+        <button onclick="closeProspectModal()" class="text-slate-400 hover:text-white">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <form onsubmit="handleSaveProspect(event)" class="space-y-3 text-xs">
+        <input type="hidden" id="prospectId">
+        
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Nombre del Negocio / Empresa:</label>
+          <input type="text" id="mBusiness" required placeholder="Ej: Estética Bella Jujuy" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Nombre del Contacto (Opcional):</label>
+            <input type="text" id="mName" placeholder="Ej: Dra. Mariana" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-300 mb-1">Teléfono WhatsApp:</label>
+            <input type="text" id="mPhone" required placeholder="Ej: 5493881234567" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-emerald-500 font-mono">
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Mensaje Personalizado:</label>
+          <textarea id="mCustomMessage" rows="5" required placeholder="Escribí el mensaje específico para este prospecto..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:outline-none focus:border-emerald-500"></textarea>
+        </div>
+
+        <div class="pt-3 flex justify-end gap-2 border-t border-slate-800">
+          <button type="button" onclick="closeProspectModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white font-medium">Cancelar</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold">Guardar Prospecto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    let currentTab = 'tab-connection';
+    let prospects = [];
+    let isConnected = false;
+    let pollInterval = null;
+
+    // Tabs switching
+    function switchTab(tabId) {
+      currentTab = tabId;
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById(tabId).classList.remove('hidden');
+
+      document.querySelectorAll('.tab-btn').forEach(el => {
+        el.classList.remove('border-emerald-500', 'text-emerald-400');
+        el.classList.add('border-transparent', 'text-slate-400');
+      });
+      const activeNav = document.getElementById(`nav-${tabId}`);
+      if (activeNav) {
+        activeNav.classList.add('border-emerald-500', 'text-emerald-400');
+        activeNav.classList.remove('border-transparent', 'text-slate-400');
+      }
+    }
+
+    // Check WhatsApp status
+    async function checkStatus() {
+      try {
+        const res = await fetch('/api/status');
+        const json = await res.json();
+        if (json.success && json.data) {
+          renderStatus(json.data);
+        }
+      } catch (err) {
+        console.error('Error fetching status:', err);
+        renderDisconnected('Error conectando al servidor local');
+      }
+    }
+
+    function renderStatus(data) {
+      const statusLabel = document.getElementById('statusLabel');
+      const statusDot = document.getElementById('statusDot');
+      const statusPing = document.getElementById('statusPing');
+
+      const qrLoadingState = document.getElementById('qrLoadingState');
+      const qrReadyState = document.getElementById('qrReadyState');
+      const qrConnectedState = document.getElementById('qrConnectedState');
+      const qrImage = document.getElementById('qrImage');
+
+      if (data.status === 'CONNECTED') {
+        isConnected = true;
+        statusLabel.textContent = 'WhatsApp Conectado';
+        statusLabel.className = 'text-emerald-400 font-semibold';
+        statusDot.className = 'relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500';
+        statusPing.className = 'animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75';
+
+        qrLoadingState.classList.add('hidden');
+        qrReadyState.classList.add('hidden');
+        qrConnectedState.classList.remove('hidden');
+
+        document.getElementById('connectedPhone').textContent = data.user?.phone ? `+${data.user.phone}` : 'Desconocido';
+        document.getElementById('connectedName').textContent = data.user?.name || 'Aura Web Bot';
+        document.getElementById('connectedSince').textContent = data.connectedAt ? new Date(data.connectedAt).toLocaleTimeString('es-AR') : '-';
+      } else if (data.status === 'QR_READY' && data.qrDataUrl) {
+        isConnected = false;
+        statusLabel.textContent = 'Escanear Código QR';
+        statusLabel.className = 'text-amber-400 font-semibold';
+        statusDot.className = 'relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500';
+        statusPing.className = 'animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75';
+
+        qrLoadingState.classList.add('hidden');
+        qrConnectedState.classList.add('hidden');
+        qrReadyState.classList.remove('hidden');
+
+        qrImage.src = data.qrDataUrl;
+      } else {
+        isConnected = false;
+        statusLabel.textContent = data.status === 'CONNECTING' ? 'Generando sesión...' : 'Desconectado';
+        statusLabel.className = 'text-slate-400 font-medium';
+        statusDot.className = 'relative inline-flex rounded-full h-2.5 w-2.5 bg-slate-500';
+        statusPing.className = 'hidden';
+
+        qrConnectedState.classList.add('hidden');
+        qrReadyState.classList.add('hidden');
+        qrLoadingState.classList.remove('hidden');
+      }
+    }
+
+    function renderDisconnected(msg) {
+      document.getElementById('statusLabel').textContent = msg;
+      document.getElementById('statusLabel').className = 'text-rose-400 font-medium';
+    }
+
+    async function handleLogout() {
+      if (!confirm('¿Seguro que deseas cerrar la sesión de WhatsApp y desvincular el dispositivo?')) return;
+      try {
+        await fetch('/api/logout', { method: 'POST' });
+        checkStatus();
+      } catch (err) {
+        alert('Error al cerrar sesión: ' + err.message);
+      }
+    }
+
+    // Prospects handling
+    async function loadProspects() {
+      try {
+        const res = await fetch('/api/prospects');
+        const json = await res.json();
+        if (json.success) {
+          prospects = json.data || [];
+          renderProspectsTable();
+        }
+      } catch (err) {
+        console.error('Error loading prospects:', err);
+      }
+    }
+
+    function renderProspectsTable() {
+      const tbody = document.getElementById('prospectsTableBody');
+      const badge = document.getElementById('tabProspectsBadge');
+      badge.textContent = prospects.length;
+
+      document.getElementById('statTotal').textContent = prospects.length;
+      document.getElementById('statSent').textContent = prospects.filter(p => p.status === 'SENT').length;
+      document.getElementById('statPending').textContent = prospects.filter(p => !p.status || p.status === 'PENDING').length;
+      document.getElementById('statFailed').textContent = prospects.filter(p => p.status === 'FAILED').length;
+
+      if (prospects.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="4" class="p-8 text-center text-slate-500">
+              No hay prospectos en la lista. Hacé click en <strong>Agregar</strong> para cargar uno.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = prospects.map((p, idx) => {
+        let statusBadge = `<span class="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full text-[10px] font-semibold">⏳ Pendiente</span>`;
+        if (p.status === 'SENT') {
+          statusBadge = `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full text-[10px] font-semibold">✅ Enviado</span>`;
+        } else if (p.status === 'FAILED') {
+          statusBadge = `<span class="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2 py-0.5 rounded-full text-[10px] font-semibold" title="${p.error || 'Error'}">❌ Falló</span>`;
+        }
+
+        return `
+          <tr class="hover:bg-slate-800/40 transition">
+            <td class="p-3">
+              <div class="font-bold text-white">${p.business || 'Sin nombre'}</div>
+              <div class="text-[11px] text-slate-400">${p.name ? p.name + ' • ' : ''}${p.niche || 'General'}</div>
+            </td>
+            <td class="p-3 font-mono text-slate-300">${p.phone}</td>
+            <td class="p-3">${statusBadge}</td>
+            <td class="p-3 text-right">
+              <div class="flex items-center justify-end gap-1">
+                <button onclick="editProspect('${p.id || idx}')" title="Editar mensaje" class="p-1 rounded hover:bg-slate-700 text-slate-400 hover:text-white">
+                  <span class="material-symbols-outlined text-[15px]">edit</span>
+                </button>
+                <button onclick="deleteProspect('${p.id || idx}')" title="Eliminar" class="p-1 rounded hover:bg-slate-700 text-rose-400 hover:text-rose-300">
+                  <span class="material-symbols-outlined text-[15px]">delete</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // Modal Add/Edit
+    function openAddProspectModal() {
+      document.getElementById('modalTitle').textContent = 'Nuevo Prospecto';
+      document.getElementById('prospectId').value = '';
+      document.getElementById('mBusiness').value = '';
+      document.getElementById('mName').value = '';
+      document.getElementById('mPhone').value = '';
+      document.getElementById('mCustomMessage').value = '';
+      document.getElementById('prospectModal').classList.remove('hidden');
+    }
+
+    function closeProspectModal() {
+      document.getElementById('prospectModal').classList.add('hidden');
+    }
+
+    function editProspect(idOrIdx) {
+      const p = prospects.find((item, i) => item.id === idOrIdx || String(i) === String(idOrIdx));
+      if (!p) return;
+
+      document.getElementById('modalTitle').textContent = 'Editar Prospecto';
+      document.getElementById('prospectId').value = p.id || idOrIdx;
+      document.getElementById('mBusiness').value = p.business || '';
+      document.getElementById('mName').value = p.name || '';
+      document.getElementById('mPhone').value = p.phone || '';
+      document.getElementById('mCustomMessage').value = p.customMessage || p.message || '';
+      document.getElementById('prospectModal').classList.remove('hidden');
+    }
+
+    async function handleSaveProspect(e) {
+      e.preventDefault();
+      const id = document.getElementById('prospectId').value;
+      const business = document.getElementById('mBusiness').value.trim();
+      const name = document.getElementById('mName').value.trim();
+      const phone = document.getElementById('mPhone').value.trim();
+      const customMessage = document.getElementById('mCustomMessage').value.trim();
+
+      if (id) {
+        const p = prospects.find((item, i) => item.id === id || String(i) === String(id));
+        if (p) {
+          p.business = business;
+          p.name = name;
+          p.phone = phone;
+          p.customMessage = customMessage;
+        }
+      } else {
+        prospects.push({
+          id: 'p_' + Date.now(),
+          business,
+          name,
+          phone,
+          customMessage,
+          status: 'PENDING'
+        });
+      }
+
+      await saveProspectsToServer();
+      closeProspectModal();
+      renderProspectsTable();
+    }
+
+    async function deleteProspect(idOrIdx) {
+      if (!confirm('¿Eliminar este prospecto de la lista?')) return;
+      prospects = prospects.filter((item, i) => item.id !== idOrIdx && String(i) !== String(idOrIdx));
+      await saveProspectsToServer();
+      renderProspectsTable();
+    }
+
+    async function resetProspectsStatus() {
+      if (!confirm('¿Reiniciar el estado de todos los prospectos a PENDIENTE para volver a enviar?')) return;
+      prospects.forEach(p => p.status = 'PENDING');
+      await saveProspectsToServer();
+      renderProspectsTable();
+    }
+
+    async function saveProspectsToServer() {
+      try {
+        await fetch('/api/prospects', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prospects })
+        });
+      } catch (err) {
+        console.error('Error saving prospects:', err);
+      }
+    }
+
+    // Campaign Execution
+    async function startCampaign() {
+      const delaySeconds = document.getElementById('campaignDelay').value;
+      try {
+        const res = await fetch('/api/campaign/start', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ delaySeconds: Number(delaySeconds) })
+        });
+        const json = await res.json();
+        if (!json.success) {
+          alert(json.error || 'Error al iniciar campaña');
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    }
+
+    async function pauseCampaign() {
+      await fetch('/api/campaign/pause', { method: 'POST' });
+    }
+
+    async function resumeCampaign() {
+      await fetch('/api/campaign/resume', { method: 'POST' });
+    }
+
+    async function stopCampaign() {
+      if (!confirm('¿Detener la campaña de prospección?')) return;
+      await fetch('/api/campaign/stop', { method: 'POST' });
+    }
+
+    async function checkCampaignStatus() {
+      try {
+        const res = await fetch('/api/campaign/status');
+        const json = await res.json();
+        if (json.success && json.data) {
+          renderCampaignUI(json.data);
+        }
+      } catch (err) {
+        console.error('Error polling campaign status:', err);
+      }
+    }
+
+    function renderCampaignUI(state) {
+      const title = document.getElementById('campaignTitle');
+      const subtitle = document.getElementById('campaignSubtitle');
+      const icon = document.getElementById('campaignStatusIcon');
+
+      const btnStart = document.getElementById('btnStartCampaign');
+      const btnPause = document.getElementById('btnPauseCampaign');
+      const btnResume = document.getElementById('btnResumeCampaign');
+      const btnStop = document.getElementById('btnStopCampaign');
+
+      if (state.isRunning) {
+        if (state.isPaused) {
+          title.textContent = 'Campaña Pausada';
+          subtitle.textContent = `Enviados: ${state.sent} de ${state.total}. Pausado por el usuario.`;
+          icon.className = 'w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center';
+          icon.innerHTML = '<span class="material-symbols-outlined text-2xl">pause</span>';
+
+          btnStart.classList.add('hidden');
+          btnPause.classList.add('hidden');
+          btnResume.classList.remove('hidden');
+          btnStop.classList.remove('hidden');
+        } else {
+          title.textContent = `Campaña en Progreso (${state.sent}/${state.total})`;
+          subtitle.textContent = state.currentProspect ? `Enviando a: ${state.currentProspect.business || state.currentProspect.name}` : 'Procesando cola...';
+          icon.className = 'w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center';
+          icon.innerHTML = '<span class="material-symbols-outlined text-2xl animate-spin">sync</span>';
+
+          btnStart.classList.add('hidden');
+          btnPause.classList.remove('hidden');
+          btnResume.classList.add('hidden');
+          btnStop.classList.remove('hidden');
+        }
+      } else {
+        title.textContent = 'Campaña Detenida';
+        subtitle.textContent = state.finishedAt ? `Finalizada: ${state.sent} enviados exitosamente.` : 'Lista para iniciar.';
+        icon.className = 'w-10 h-10 rounded-xl bg-slate-800 text-slate-400 flex items-center justify-center';
+        icon.innerHTML = '<span class="material-symbols-outlined text-2xl">stop</span>';
+
+        btnStart.classList.remove('hidden');
+        btnPause.classList.add('hidden');
+        btnResume.classList.add('hidden');
+        btnStop.classList.add('hidden');
+      }
+
+      // Render Logs
+      const logsContainer = document.getElementById('activityLogs');
+      if (state.logs && state.logs.length > 0) {
+        logsContainer.innerHTML = state.logs.map(log => {
+          let color = 'text-slate-300';
+          if (log.type === 'success') color = 'text-emerald-400';
+          if (log.type === 'warning') color = 'text-amber-400';
+          if (log.type === 'error') color = 'text-rose-400';
+
+          return `<div class="leading-tight"><span class="text-slate-600">[${log.timestamp}]</span> <span class="${color}">${log.message}</span></div>`;
+        }).join('');
+      }
+
+      // Refresh table state dynamically
+      loadProspects();
+    }
+
+    // Single message test
+    async function handleSendSingle(e) {
+      e.preventDefault();
+      const phone = document.getElementById('singlePhone').value.trim();
+      const message = document.getElementById('singleMessage').value.trim();
+      const btn = document.getElementById('btnSendSingle');
+      const alertBox = document.getElementById('singleAlert');
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">sync</span> Enviando...';
+
+      try {
+        const res = await fetch('/api/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone, message })
+        });
+        const json = await res.json();
+        alertBox.classList.remove('hidden', 'bg-rose-500/10', 'border-rose-500/30', 'text-rose-400', 'bg-emerald-500/10', 'border-emerald-500/30', 'text-emerald-400');
+        if (json.success) {
+          alertBox.classList.add('bg-emerald-500/10', 'border-emerald-500/30', 'text-emerald-400');
+          alertBox.textContent = '¡Mensaje enviado con éxito!';
+        } else {
+          alertBox.classList.add('bg-rose-500/10', 'border-rose-500/30', 'text-rose-400');
+          alertBox.textContent = 'Error: ' + (json.error || 'No se pudo enviar el mensaje.');
+        }
+      } catch (err) {
+        alertBox.classList.remove('hidden');
+        alertBox.classList.add('bg-rose-500/10', 'border-rose-500/30', 'text-rose-400');
+        alertBox.textContent = 'Error de conexión: ' + err.message;
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span class="material-symbols-outlined text-[16px]">send</span> Enviar Mensaje Ahora';
+      }
+    }
+
+    function loadTestMessageTemplate() {
+      document.getElementById('singleMessage').value = '¡Hola! Este es un mensaje de prueba enviado desde Wally Bot (Aura Web Automation) para verificar la conexión de WhatsApp.';
+    }
+
+    // Polling loop
+    function startPolling() {
+      checkStatus();
+      loadProspects();
+      checkCampaignStatus();
+
+      pollInterval = setInterval(() => {
+        checkStatus();
+        checkCampaignStatus();
+      }, 2500);
+    }
+
+    window.onload = startPolling;
+  </script>
+</body>
+</html>
