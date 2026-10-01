@@ -32,10 +32,26 @@ class CampaignManager {
     setTimeout(async () => {
       const dbProspects = await db.getAllProspects();
       if (dbProspects && dbProspects.length > 0) {
-        this.prospectsQueue = dbProspects;
-        console.log(`[Campaign] 🐘 ${dbProspects.length} prospectos sincronizados desde PostgreSQL.`);
+        // Verificar si contiene caracteres corruptos (diamantes de reemplazo UTF-8)
+        const hasCorruptedChars = dbProspects.some(p => 
+          (p.business && (p.business.includes('') || p.business.includes('\uFFFD'))) ||
+          (p.niche && (p.niche.includes('') || p.niche.includes('\uFFFD'))) ||
+          (p.customMessage && (p.customMessage.includes('') || p.customMessage.includes('\uFFFD')))
+        );
+
+        if (hasCorruptedChars) {
+          console.log('[Campaign] ⚠️ Se detectaron caracteres corruptos en BD. Restaurando desde prospects.json con UTF-8 limpio...');
+          this.loadProspectsFromFile();
+          await db.saveAllProspects(this.prospectsQueue);
+        } else {
+          this.prospectsQueue = dbProspects;
+        }
+        console.log(`[Campaign] 🐘 ${this.prospectsQueue.length} prospectos sincronizados correctamente.`);
       } else {
         this.loadProspectsFromFile();
+        if (db.isConnected && this.prospectsQueue.length > 0) {
+          await db.saveAllProspects(this.prospectsQueue);
+        }
       }
     }, 1000);
   }

@@ -18,25 +18,31 @@ class Database {
     }
 
     try {
-      if (connectionString) {
-        this.pool = new Pool({
-          connectionString,
-          ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false
-        });
-      } else {
-        this.pool = new Pool({
-          host: process.env.DB_HOST || 'localhost',
-          port: parseInt(process.env.DB_PORT || '5432'),
-          user: process.env.DB_USER || 'postgres',
-          password: process.env.DB_PASSWORD || '',
-          database: process.env.DB_NAME || 'wally_bot',
-          ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false
-        });
-      }
+      const poolConfig = connectionString
+        ? {
+            connectionString,
+            ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false
+          }
+        : {
+            host: process.env.DB_HOST || 'localhost',
+            port: parseInt(process.env.DB_PORT || '5432'),
+            user: process.env.DB_USER || 'postgres',
+            password: process.env.DB_PASSWORD || '',
+            database: process.env.DB_NAME || 'wally_bot',
+            ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false
+          };
+
+      this.pool = new Pool(poolConfig);
+
+      // Garantizar que toda conexión use UTF8
+      this.pool.on('connect', (client) => {
+        client.query("SET client_encoding = 'UTF8'").catch(() => {});
+      });
 
       // Test connection
       const client = await this.pool.connect();
-      console.log('[Database] 🐘 ¡Conexión exitosa a PostgreSQL!');
+      await client.query("SET client_encoding = 'UTF8'");
+      console.log('[Database] 🐘 ¡Conexión exitosa a PostgreSQL (UTF-8 activado)!');
       this.isConnected = true;
       client.release();
 
