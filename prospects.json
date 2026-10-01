@@ -1,12 +1,102 @@
 [
   {
-    "id": "test_dentista_01",
-    "business": "Consultorio Odontológico San Salvador",
-    "name": "Dr. Darío",
-    "niche": "Odontología & Estética Dental",
-    "location": "San Salvador de Jujuy",
-    "phone": "5493885104530",
-    "customMessage": "Hola Dr. Darío, ¿cómo está? Buenas tardes. Le escribo desde Aura Web Jujuy. Estuve viendo su consultorio odontológico y el trabajo que realizan en la zona. Nos dedicamos a diseñar sitios web para clínicas dentales, con turnero interactivo directo a WhatsApp y presentación de tratamientos (ortodoncia, implantes, blanqueamiento). Desarrollamos una demo en vivo para consultorios de Jujuy: https://demo-odontologia-seven.vercel.app/ - ¿Le interesaría evaluar una propuesta personalizada para su clínica sin compromiso? Saludos cordiales!",
+    "id": "salta_dent_01",
+    "business": "Clínica Dentis Salta",
+    "name": "Equipo Clínica Dentis",
+    "niche": "Odontología & Urgencias 24hs",
+    "location": "Santiago del Estero 118, Salta Capital",
+    "phone": "5493872237396",
+    "customMessage": "Hola, ¿cómo están? Buenas tardes. Les escribo desde Aura Web. Estuve viendo la presencia de Clínica Dentis en Salta y el gran volumen de atención que manejan. Nos dedicamos a diseñar páginas web médicas de alto impacto con turnero interactivo directo a WhatsApp y catálogo de tratamientos (ortodoncia, implantes, estética). Desarrollamos esta demo en vivo para clínicas odontológicas del Norte: https://demo-odontologia-seven.vercel.app/ - ¿Les interesaría evaluar una propuesta personalizada para modernizar la web de Dentis sin compromiso? Saludos cordiales!",
+    "status": "PENDING"
+  },
+  {
+    "id": "salta_dent_02",
+    "business": "Sanus Consultorios Odontológicos",
+    "name": "Dr. Rafael Figueroa Langou",
+    "niche": "Odontología Integral & Ortodoncia",
+    "location": "Av. Belgrano 1205, Salta Capital",
+    "phone": "5493874828272",
+    "customMessage": "Hola Dr. Rafael, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Estuve viendo el trabajo que realizan en Sanus Consultorios en Salta. Nos especializamos en crear sitios web para clínicas dentales con sistema de solicitud de turnos directo a WhatsApp y presentación clara de especialidades. Diseñamos una demo en vivo para consultorios de la región: https://demo-odontologia-seven.vercel.app/ - ¿Le interesaría ver cómo quedaría una propuesta similar para Sanus sin compromiso? Saludos cordiales!",
+    "status": "PENDING"
+  },
+  {
+    "id": "salta_dent_03",
+    "business": "Consultorio Odontológico Dr. Javier Vargas",
+    "name": "Dr. Javier Vargas Gasco",
+    "niche": "Ortodoncia, Implantes & Estética",
+    "location": "Salta Capital",
+    "phone": "5493875622110",
+    "customMessage": "Hola Dr. Javier, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Estuve viendo su consultorio odontológico y los tratamientos de estética e implantes que realiza en Salta. Diseñamos páginas web profesionales para odontólogos con turnero ágil directo a WhatsApp y catálogo de casos antes/después. Le comparto una demo en vivo que desarrollamos: https://demo-odontologia-seven.vercel.app/ - ¿Le gustaría que le preparemos una maqueta visual para su consultorio sin costo? Saludos cordiales!",
+    "status": "PENDING"
+  },
+  {
+    "id": "salta_dent_04",
+    "business": "Consultorio Dra. Claudia Castro Ramos",
+    "name": "Dra. Claudia Castro Ramos",
+    "niche": "Odontología & Implantes",
+    "location": "Belgrano 289, Salta Capital",
+    "phone": "5493875835306",
+    "customMessage": "Hola Dra. Claudia, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Estuve viendo su consultorio en calle Belgrano y los servicios odontológicos que brinda en Salta Capital. Desarrollamos sitios web modernos para odontólogos, optimizados para celulares con botón directo a WhatsApp y cotizador de tratamientos. Le acerco nuestra demo en vivo: https://demo-odontologia-seven.vercel.app/ - ¿Le interesaría evaluar una propuesta para su consultorio sin compromiso? Saludos cordiales!",
+    "status": "PENDING"
+  },
+  {
+    "id": "salta_dent_05",
+    "business": "Consultorio Odontológico Dr. Cerrizuela",
+    "name": "Dr. Miguel Ángel Cerrizuela",
+    "niche": "Prótesis, Implantes & Odontología",
+    "location": "Necochea 652, Salta Capital",
+    "phone": "5493872135290",
+    "customMessage": "Hola Dr. Miguel Ángel, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Estuve viendo su consultorio odontológico en calle Necochea en Salta. Nos dedicamos a diseñar páginas web para clínicas dentales enfocadas en captar pacientes nuevos por WhatsApp y mostrar tratamientos con claridad. Desarrollamos esta demo interactiva: https://demo-odontologia-seven.vercel.app/ - ¿Le gustaría que le mostremos una maqueta personalizada para su consultorio sin cargo? Saludos cordiales!",
+    "status": "PENDING"
+  },
+  {
+    "id": "salta_dent_06",
+    "business": "Consultorio Integral Dra. Nadia Romero",
+    "name": "Dra. Nadia Romero",
+    "niche": "Odontología Integral & Prevención",
+    "location": "San Juan 383, Salta Capital",
+    "phone": "5493875376501",
+    "customMessage": "Hola Dra. Nadia, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Estuve viendo su atención odontológica en San Juan 383 en Salta. Creamos sitios web médicos de alta velocidad diseñados para celulares, con turnero automático a WhatsApp y preguntas frecuentes para pacientes. Le comparto una demo en vivo de ejemplo: https://demo-odontologia-seven.vercel.app/ - ¿Le interesaría recibir una propuesta visual para su consultorio sin compromiso? Saludos cordiales!",
+    "status": "PENDING"
+  },
+  {
+    "id": "salta_dent_07",
+    "business": "Consultorio Odontológico Pellegrini",
+    "name": "Equipo Odontología Pellegrini",
+    "niche": "Estética Dental, Implantes & Cirugía",
+    "location": "Pellegrini 79, Salta Capital",
+    "phone": "5493876130421",
+    "customMessage": "Hola, ¿cómo están? Buenas tardes. Les escribo desde Aura Web. Estuve viendo los servicios odontológicos y de estética dental que ofrecen en Pellegrini 79 en Salta. Diseñamos sitios web profesionales para clínicas dentales con recepción de turnos directa a WhatsApp y presentación de especialidades. Les comparto nuestra demo en vivo: https://demo-odontologia-seven.vercel.app/ - ¿Les interesaría evaluar una propuesta para su consultorio sin compromiso? Saludos cordiales!",
+    "status": "PENDING"
+  },
+  {
+    "id": "salta_dent_08",
+    "business": "Consultorio Odontológico Dr. Berretoni",
+    "name": "Dr. Marcelo Berretoni",
+    "niche": "Endodoncia, Cirugía & Prótesis",
+    "location": "San Juan esq. Chacabuco, Salta Capital",
+    "phone": "5493875447064",
+    "customMessage": "Hola Dr. Marcelo, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Estuve viendo su consultorio en calle San Juan en Salta. Nos dedicamos a desarrollar páginas web para odontólogos, con integración a WhatsApp para facilitar la reserva de turnos y destacar los tratamientos de la clínica. Le dejo una demo en vivo para ver la experiencia: https://demo-odontologia-seven.vercel.app/ - ¿Le gustaría ver una propuesta pensada para su consultorio? Saludos cordiales!",
+    "status": "PENDING"
+  },
+  {
+    "id": "salta_dent_09",
+    "business": "Consultorio Dr. Ignacio Molina Ávila",
+    "name": "Dr. Ignacio Molina Ávila",
+    "niche": "Medicina Oral & Odontología",
+    "location": "Deán Funes 462, Salta Capital",
+    "phone": "5493872281768",
+    "customMessage": "Hola Dr. Ignacio, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Estuve viendo su especialidad en medicina oral y odontología en calle Deán Funes en Salta. Desarrollamos plataformas web médicas limpias y rápidas para facilitar el contacto directo de pacientes vía WhatsApp. Le comparto una demo en vivo de referencia: https://demo-odontologia-seven.vercel.app/ - ¿Le interesaría evaluar una propuesta digital para su consultorio sin compromiso? Saludos cordiales!",
+    "status": "PENDING"
+  },
+  {
+    "id": "salta_dent_10",
+    "business": "Centro Odontológico Salta",
+    "name": "Rehabilitación Oral & Estética Salta",
+    "niche": "Rehabilitación Oral & Blanqueamiento",
+    "location": "Santiago del Estero 191, Salta Capital",
+    "phone": "5493872207134",
+    "customMessage": "Hola, ¿cómo están? Buenas tardes. Les escribo desde Aura Web. Estuve viendo los tratamientos de rehabilitación oral y estética dental que realizan en Salta Capital. Diseñamos sitios web profesionales con catálogo interactivo y embudo directo a WhatsApp para agendar consultas de diagnóstico. Les acerco nuestra demo en vivo: https://demo-odontologia-seven.vercel.app/ - ¿Les interesaría recibir una maqueta de muestra sin costo? Saludos cordiales!",
     "status": "PENDING"
   }
 ]
