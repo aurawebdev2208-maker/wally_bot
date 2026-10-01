@@ -352,6 +352,10 @@
           </div>
 
           <!-- Buttons -->
+          <button type="button" onclick="sendCampaignTest()" title="Envía el mensaje de la campaña a tu número para probarlo antes de iniciar" class="px-4 py-2.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/30 font-bold text-xs flex items-center gap-1.5 transition">
+            <span class="material-symbols-outlined text-[17px]">science</span>
+            Probar en mi Celular
+          </button>
           <button id="btnStartCampaign" onclick="startCampaign()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold text-xs flex items-center gap-1.5 transition shadow-lg shadow-emerald-600/20">
             <span class="material-symbols-outlined text-[18px]">play_arrow</span>
             Iniciar Campaña
@@ -883,6 +887,38 @@
         });
       } catch (err) {
         console.error('Error saving prospects:', err);
+      }
+    }
+
+    // Test Campaign Single Send to Personal Phone
+    async function sendCampaignTest() {
+      if (!prospects || prospects.length === 0) {
+        alert('No hay prospectos cargados en la lista para tomar el mensaje de prueba.');
+        return;
+      }
+
+      const defaultPhone = localStorage.getItem('wally_test_phone') || '3885104530';
+      const testPhone = prompt('Ingresá tu número de teléfono para recibir la prueba de la campaña:', defaultPhone);
+      if (!testPhone) return;
+
+      localStorage.setItem('wally_test_phone', testPhone.trim());
+      const sampleProspect = prospects[0];
+      const message = sampleProspect.customMessage || sampleProspect.message;
+
+      try {
+        const res = await authFetch('/api/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: testPhone.trim(), message })
+        });
+        const json = await res.json();
+        if (json.success) {
+          alert(`✅ ¡Mensaje de prueba enviado con éxito a ${testPhone}!\n\nRevisá tu celular para verificar el texto y el link antes de iniciar la campaña.`);
+        } else {
+          alert('Error al enviar mensaje de prueba: ' + (json.error || 'Verificá que WhatsApp esté conectado.'));
+        }
+      } catch (err) {
+        alert('Error: ' + err.message);
       }
     }
 
