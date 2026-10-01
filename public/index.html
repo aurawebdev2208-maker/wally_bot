@@ -56,6 +56,60 @@
 
 <body class="h-full flex flex-col font-sans antialiased bg-slate-950 text-slate-100 selection:bg-emerald-500 selection:text-slate-950">
 
+  <!-- ================= LOGIN OVERLAY ================= -->
+  <div id="loginOverlay" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-xl flex items-center justify-center p-4">
+    <!-- Subtle background glow effects -->
+    <div class="absolute -top-32 -left-32 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-32 -right-32 w-80 h-80 bg-teal-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="relative w-full max-w-md bg-slate-900/90 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+      <div class="text-center space-y-2">
+        <div class="inline-flex w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-cyan-400 p-0.5 shadow-xl shadow-emerald-500/20 items-center justify-center mb-1">
+          <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
+            <span class="material-symbols-outlined text-emerald-400 text-3xl">smart_toy</span>
+          </div>
+        </div>
+        <h2 class="text-xl font-bold text-white tracking-tight">Acceso a Wally Bot</h2>
+        <p class="text-xs text-slate-400">Ingresá tus credenciales para administrar WhatsApp y campañas</p>
+      </div>
+
+      <div id="loginErrorAlert" class="hidden p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2">
+        <span class="material-symbols-outlined text-base">error</span>
+        <span id="loginErrorMessage">Usuario o contraseña incorrectos</span>
+      </div>
+
+      <form id="loginForm" onsubmit="handleLoginSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5" for="loginUsername">Usuario</label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-500 text-[18px]">person</span>
+            <input type="text" id="loginUsername" required autocomplete="username" placeholder="Usuario" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-3 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1.5" for="loginPassword">Contraseña</label>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-500 text-[18px]">key</span>
+            <input type="password" id="loginPassword" required autocomplete="current-password" placeholder="••••••••" class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-10 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition">
+            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-2.5 text-slate-500 hover:text-slate-300 transition">
+              <span id="pwdEyeIcon" class="material-symbols-outlined text-[18px]">visibility</span>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" id="btnLoginSubmit" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-slate-950 font-bold text-sm shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2">
+          <span id="btnLoginText">Ingresar al Sistema</span>
+          <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+        </button>
+      </form>
+
+      <div class="pt-2 text-center border-t border-slate-800/80 text-[11px] text-slate-500">
+        Aura Web &bull; Sistema Protegido de Prospección
+      </div>
+    </div>
+  </div>
+
   <!-- TOP HEADER -->
   <header class="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-40 px-4 sm:px-8 py-3.5 flex items-center justify-between">
     <div class="flex items-center gap-3">
@@ -75,7 +129,7 @@
       </div>
     </div>
 
-    <!-- Live Status Indicator -->
+    <!-- Live Status Indicator & User Profile -->
     <div class="flex items-center gap-3">
       <div id="connectionPill" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-xs font-medium text-slate-300 transition-all duration-300">
         <span class="relative flex h-2.5 w-2.5">
@@ -88,6 +142,18 @@
       <button onclick="checkStatus()" title="Actualizar estado" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white transition">
         <span class="material-symbols-outlined text-[18px]">refresh</span>
       </button>
+
+      <!-- User Profile & Logout -->
+      <div id="userProfile" class="flex items-center gap-2.5 pl-3 border-l border-slate-800">
+        <div class="hidden sm:flex flex-col text-right">
+          <span id="displayUsername" class="text-xs font-bold text-slate-200">dorquera</span>
+          <span class="text-[10px] text-emerald-400">Autenticado</span>
+        </div>
+        <button onclick="handleAppLogout()" title="Cerrar sesión" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 border border-slate-700 hover:border-rose-500/30 text-xs font-semibold flex items-center gap-1 transition">
+          <span class="material-symbols-outlined text-[16px]">logout</span>
+          <span class="hidden sm:inline">Salir</span>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -453,6 +519,118 @@
     let isConnected = false;
     let pollInterval = null;
 
+    let authToken = localStorage.getItem('wally_auth_token') || null;
+    let currentUsername = localStorage.getItem('wally_auth_user') || 'dorquera';
+
+    // Centralized authenticated fetch helper
+    async function authFetch(url, options = {}) {
+      options.headers = options.headers || {};
+      if (authToken) {
+        options.headers['Authorization'] = `Bearer ${authToken}`;
+      }
+      try {
+        const res = await fetch(url, options);
+        if (res.status === 401) {
+          showLogin('Tu sesión ha expirado o no es válida. Por favor, ingresá nuevamente.');
+          throw new Error('No autorizado (401)');
+        }
+        return res;
+      } catch (err) {
+        if (err.message && err.message.includes('401')) {
+          throw err;
+        }
+        throw err;
+      }
+    }
+
+    // UI Auth Management
+    function showLogin(customError = null) {
+      if (pollInterval) {
+        clearInterval(pollInterval);
+        pollInterval = null;
+      }
+      authToken = null;
+      localStorage.removeItem('wally_auth_token');
+
+      const overlay = document.getElementById('loginOverlay');
+      overlay.classList.remove('hidden');
+
+      const alertBox = document.getElementById('loginErrorAlert');
+      const alertMsg = document.getElementById('loginErrorMessage');
+      if (customError) {
+        alertMsg.textContent = customError;
+        alertBox.classList.remove('hidden');
+      } else {
+        alertBox.classList.add('hidden');
+      }
+
+      document.getElementById('loginPassword').value = '';
+    }
+
+    function showDashboard() {
+      const overlay = document.getElementById('loginOverlay');
+      overlay.classList.add('hidden');
+      document.getElementById('displayUsername').textContent = currentUsername || 'dorquera';
+      startPolling();
+    }
+
+    function togglePasswordVisibility() {
+      const pwdInput = document.getElementById('loginPassword');
+      const eyeIcon = document.getElementById('pwdEyeIcon');
+      if (pwdInput.type === 'password') {
+        pwdInput.type = 'text';
+        eyeIcon.textContent = 'visibility_off';
+      } else {
+        pwdInput.type = 'password';
+        eyeIcon.textContent = 'visibility';
+      }
+    }
+
+    async function handleLoginSubmit(e) {
+      e.preventDefault();
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+      const btn = document.getElementById('btnLoginSubmit');
+      const btnText = document.getElementById('btnLoginText');
+      const alertBox = document.getElementById('loginErrorAlert');
+      const alertMsg = document.getElementById('loginErrorMessage');
+
+      alertBox.classList.add('hidden');
+      btn.disabled = true;
+      btnText.textContent = 'Verificando...';
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success && data.token) {
+          authToken = data.token;
+          currentUsername = (data.user && data.user.username) || username;
+          localStorage.setItem('wally_auth_token', authToken);
+          localStorage.setItem('wally_auth_user', currentUsername);
+          showDashboard();
+        } else {
+          alertMsg.textContent = data.error || 'Usuario o contraseña incorrectos.';
+          alertBox.classList.remove('hidden');
+        }
+      } catch (err) {
+        alertMsg.textContent = 'Error al conectar con el servidor: ' + err.message;
+        alertBox.classList.remove('hidden');
+      } finally {
+        btn.disabled = false;
+        btnText.textContent = 'Ingresar al Sistema';
+      }
+    }
+
+    function handleAppLogout() {
+      if (!confirm('¿Deseas cerrar sesión en el panel de Wally Bot?')) return;
+      showLogin();
+    }
+
     // Tabs switching
     function switchTab(tabId) {
       currentTab = tabId;
@@ -472,15 +650,18 @@
 
     // Check WhatsApp status
     async function checkStatus() {
+      if (!authToken) return;
       try {
-        const res = await fetch('/api/status');
+        const res = await authFetch('/api/status');
         const json = await res.json();
         if (json.success && json.data) {
           renderStatus(json.data);
         }
       } catch (err) {
-        console.error('Error fetching status:', err);
-        renderDisconnected('Error conectando al servidor local');
+        if (!err.message.includes('401')) {
+          console.error('Error fetching status:', err);
+          renderDisconnected('Error conectando al servidor');
+        }
       }
     }
 
@@ -541,24 +722,29 @@
     async function handleLogout() {
       if (!confirm('¿Seguro que deseas cerrar la sesión de WhatsApp y desvincular el dispositivo?')) return;
       try {
-        await fetch('/api/logout', { method: 'POST' });
+        await authFetch('/api/logout', { method: 'POST' });
         checkStatus();
       } catch (err) {
-        alert('Error al cerrar sesión: ' + err.message);
+        if (!err.message.includes('401')) {
+          alert('Error al cerrar sesión: ' + err.message);
+        }
       }
     }
 
     // Prospects handling
     async function loadProspects() {
+      if (!authToken) return;
       try {
-        const res = await fetch('/api/prospects');
+        const res = await authFetch('/api/prospects');
         const json = await res.json();
         if (json.success) {
           prospects = json.data || [];
           renderProspectsTable();
         }
       } catch (err) {
-        console.error('Error loading prospects:', err);
+        if (!err.message.includes('401')) {
+          console.error('Error loading prospects:', err);
+        }
       }
     }
 
@@ -690,7 +876,7 @@
 
     async function saveProspectsToServer() {
       try {
-        await fetch('/api/prospects', {
+        await authFetch('/api/prospects', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ prospects })
@@ -704,7 +890,7 @@
     async function startCampaign() {
       const delaySeconds = document.getElementById('campaignDelay').value;
       try {
-        const res = await fetch('/api/campaign/start', {
+        const res = await authFetch('/api/campaign/start', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ delaySeconds: Number(delaySeconds) })
@@ -714,32 +900,43 @@
           alert(json.error || 'Error al iniciar campaña');
         }
       } catch (err) {
-        alert('Error: ' + err.message);
+        if (!err.message.includes('401')) {
+          alert('Error: ' + err.message);
+        }
       }
     }
 
     async function pauseCampaign() {
-      await fetch('/api/campaign/pause', { method: 'POST' });
+      try {
+        await authFetch('/api/campaign/pause', { method: 'POST' });
+      } catch (err) {}
     }
 
     async function resumeCampaign() {
-      await fetch('/api/campaign/resume', { method: 'POST' });
+      try {
+        await authFetch('/api/campaign/resume', { method: 'POST' });
+      } catch (err) {}
     }
 
     async function stopCampaign() {
       if (!confirm('¿Detener la campaña de prospección?')) return;
-      await fetch('/api/campaign/stop', { method: 'POST' });
+      try {
+        await authFetch('/api/campaign/stop', { method: 'POST' });
+      } catch (err) {}
     }
 
     async function checkCampaignStatus() {
+      if (!authToken) return;
       try {
-        const res = await fetch('/api/campaign/status');
+        const res = await authFetch('/api/campaign/status');
         const json = await res.json();
         if (json.success && json.data) {
           renderCampaignUI(json.data);
         }
       } catch (err) {
-        console.error('Error polling campaign status:', err);
+        if (!err.message.includes('401')) {
+          console.error('Error polling campaign status:', err);
+        }
       }
     }
 
@@ -816,7 +1013,7 @@
       btn.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">sync</span> Enviando...';
 
       try {
-        const res = await fetch('/api/send', {
+        const res = await authFetch('/api/send', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ phone, message })
@@ -831,9 +1028,11 @@
           alertBox.textContent = 'Error: ' + (json.error || 'No se pudo enviar el mensaje.');
         }
       } catch (err) {
-        alertBox.classList.remove('hidden');
-        alertBox.classList.add('bg-rose-500/10', 'border-rose-500/30', 'text-rose-400');
-        alertBox.textContent = 'Error de conexión: ' + err.message;
+        if (!err.message.includes('401')) {
+          alertBox.classList.remove('hidden');
+          alertBox.classList.add('bg-rose-500/10', 'border-rose-500/30', 'text-rose-400');
+          alertBox.textContent = 'Error de conexión: ' + err.message;
+        }
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<span class="material-symbols-outlined text-[16px]">send</span> Enviar Mensaje Ahora';
@@ -846,6 +1045,7 @@
 
     // Polling loop
     function startPolling() {
+      if (pollInterval) clearInterval(pollInterval);
       checkStatus();
       loadProspects();
       checkCampaignStatus();
@@ -856,7 +1056,25 @@
       }, 2500);
     }
 
-    window.onload = startPolling;
+    // App Initialization
+    async function initApp() {
+      if (authToken) {
+        try {
+          const res = await fetch('/api/auth/verify', {
+            headers: { 'Authorization': `Bearer ${authToken}` }
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            currentUsername = (data.user && data.user.username) || currentUsername;
+            showDashboard();
+            return;
+          }
+        } catch (e) {}
+      }
+      showLogin();
+    }
+
+    window.onload = initApp;
   </script>
 </body>
 </html>
