@@ -5,17 +5,20 @@ class Database {
   constructor() {
     this.pool = null;
     this.isConnected = false;
-    this.init();
+    this.initPromise = null;
   }
 
   async init() {
-    const connectionString = process.env.DATABASE_URL;
-    const dbHost = process.env.DB_HOST;
+    if (this.initPromise) return this.initPromise;
 
-    if (!connectionString && !dbHost) {
-      console.log('[Database] ℹ️ No se detectó DATABASE_URL ni DB_HOST. Modo archivo JSON activo.');
-      return;
-    }
+    this.initPromise = (async () => {
+      const connectionString = process.env.DATABASE_URL;
+      const dbHost = process.env.DB_HOST;
+
+      if (!connectionString && !dbHost) {
+        console.log('[Database] ℹ️ No se detectó DATABASE_URL ni DB_HOST. Modo archivo JSON activo.');
+        return false;
+      }
 
     try {
       const poolConfig = connectionString
@@ -44,14 +47,17 @@ class Database {
       await client.query("SET client_encoding = 'UTF8'");
       console.log('[Database] 🐘 ¡Conexión exitosa a PostgreSQL (UTF-8 activado)!');
       this.isConnected = true;
-      client.release();
-
       await this.runMigrations();
+      return this.isConnected;
     } catch (err) {
       console.error('[Database] ⚠️ Error conectando a PostgreSQL:', err.message);
       console.log('[Database] ℹ️ Continuando con persistencia local JSON.');
       this.isConnected = false;
+      return false;
     }
+    })();
+
+    return this.initPromise;
   }
 
   async runMigrations() {

@@ -60,6 +60,7 @@ class WhatsAppManager {
   async init() {
     try {
       console.log('[WhatsApp] Inicializando sesión de Baileys...');
+      await db.init();
       this.state.status = 'CONNECTING';
       this.state.lastError = null;
       this.notifyStateChange();
