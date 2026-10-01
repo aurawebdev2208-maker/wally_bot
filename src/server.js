@@ -5,6 +5,7 @@ const path = require('path');
 const crypto = require('crypto');
 const whatsapp = require('./whatsapp');
 const campaign = require('./campaign');
+const db = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -148,6 +149,43 @@ app.post('/api/send', async (req, res) => {
   try {
     const result = await whatsapp.sendTextMessage(phone, message, { simulateTyping: true });
     res.json({ success: true, data: result });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// === API INBOX (WHATSAPP -> ANTIGRAVITY BRIDGE) ===
+
+app.get('/api/inbox/unread', async (req, res) => {
+  try {
+    const unread = await db.getUnreadInboxMessages();
+    res.json({
+      success: true,
+      count: unread.length,
+      messages: unread
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.post('/api/inbox/ack', async (req, res) => {
+  const { ids } = req.body;
+  if (!Array.isArray(ids)) {
+    return res.status(400).json({ success: false, error: 'ids debe ser un arreglo de IDs.' });
+  }
+  try {
+    await db.markInboxMessagesProcessed(ids);
+    res.json({ success: true, message: 'Mensajes marcados como procesados.' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.get('/api/inbox/history', async (req, res) => {
+  try {
+    const history = await db.getInboxHistory(30);
+    res.json({ success: true, data: history });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }

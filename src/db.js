@@ -101,11 +101,23 @@ class Database {
         message_text TEXT,
         created_at TIMESTAMPTZ DEFAULT NOW()
       );
+
+      -- 4. Tabla de Buzón de Entrada para Antigravity (Prompts de Darío por WhatsApp)
+      CREATE TABLE IF NOT EXISTS agent_inbox (
+        id BIGSERIAL PRIMARY KEY,
+        remote_jid VARCHAR(100) NOT NULL,
+        phone VARCHAR(50) NOT NULL,
+        sender_name VARCHAR(255),
+        message_text TEXT NOT NULL,
+        processed BOOLEAN NOT NULL DEFAULT FALSE,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        processed_at TIMESTAMPTZ
+      );
     `;
 
     try {
       await this.pool.query(schemaQuery);
-      console.log('[Database] ✅ Tablas "prospects", "campaign_logs" y "messages" listas en PostgreSQL.');
+      console.log('[Database] ✅ Tablas "prospects", "campaign_logs", "messages" y "agent_inbox" listas en PostgreSQL.');
     } catch (err) {
       console.error('[Database] Error ejecutando migraciones:', err.message);
     }
@@ -227,6 +239,100 @@ class Database {
       console.error('[Database] Error obteniendo mensajes:', err.message);
       return [];
     }
+  }
+
+  // === AGENT INBOX (WHATSAPP -> ANTIGRAVITY BRIDGE) ===
+  async saveInboxMessage(msg) {
+    const cleanPhone = msg.remoteJid ? msg.remoteJid.split('@')[0].replace(/[^\d]/g, '') : (msg.phone || '');
+    
+    if (this.isConnected && this.pool) {
+      try {
+        const query = `
+          INSERT INTO agent_inbox (remote_jid, phone, sender_name, message_text, processed, created_at)
+          VALUES ($1, $2, $3, $4, FALSE, NOW())
+          RETURNING *;
+        `;
+        const values = [
+          msg.remoteJid || `${cleanPhone}@s.whatsapp.net`,
+          cleanPhone,
+          msg.senderName || 'Darío',
+          msg.messageText || msg.text || ''
+        ];
+        const res = await this.pool.query(query, values);
+        return res.rows[0];
+      } catch (err) {
+        console.error('[Database] Error guardando mensaje en agent_inbox:', err.message);
+      }
+    }
+
+    // Fallback en memoria / archivo local
+    return {
+      id: Date.now(),
+      remoteJid: msg.remoteJid,
+      phone: cleanPhone,
+      senderName: msg.senderName || 'Darío',
+      messageText: msg.messageText || msg.text || '',
+      processed: false,
+      createdAt: new Date().toISOString()
+    };
+  }
+
+  async getUnreadInboxMessages() {
+    if (this.isConnected && this.pool) {
+      try {
+        const query = `
+          SELECT * FROM agent_inbox 
+          WHERE processed = FALSE 
+          ORDER BY created_at ASC;
+        `;
+        const res = await this.pool.query(query);
+        return res.rows.map(r => ({
+          id: r.id,
+          remoteJid: r.remote_jid,
+          phone: r.phone,
+          senderName: r.sender_name,
+          messageText: r.message_text,
+          processed: r.processed,
+          createdAt: r.created_at
+        }));
+      } catch (err) {
+        console.error('[Database] Error obteniendo mensajes sin leer de agent_inbox:', err.message);
+        return [];
+      }
+    }
+    return [];
+  }
+
+  async markInboxMessagesProcessed(ids = []) {
+    if (!ids || ids.length === 0) return true;
+    if (this.isConnected && this.pool) {
+      try {
+        await this.pool.query(
+          `UPDATE agent_inbox SET processed = TRUE, processed_at = NOW() WHERE id = ANY($1::bigint[])`,
+          [ids]
+        );
+        return true;
+      } catch (err) {
+        console.error('[Database] Error marcando mensajes como procesados:', err.message);
+        return false;
+      }
+    }
+    return true;
+  }
+
+  async getInboxHistory(limit = 20) {
+    if (this.isConnected && this.pool) {
+      try {
+        const res = await this.pool.query(
+          'SELECT * FROM agent_inbox ORDER BY created_at DESC LIMIT $1',
+          [limit]
+        );
+        return res.rows;
+      } catch (err) {
+        return [];
+      }
+    }
+    return [];
   }
 
   // === LOGS ===

@@ -116,15 +116,33 @@ class WhatsAppManager {
                 const senderName = msg.pushName || 'Cliente';
 
                 if (text && remoteJid && !remoteJid.includes('@g.us')) {
+                  const cleanPhone = remoteJid.split('@')[0].replace(/[^\d]/g, '');
                   console.log(`[WhatsApp] 💬 Nuevo mensaje recibido de ${senderName} (${remoteJid}): "${text}"`);
+                  
+                  // Guardar en el historial general de mensajes
                   await db.saveMessage({
                     id: msg.key.id,
                     remoteJid,
+                    phone: cleanPhone,
                     fromMe: false,
                     senderName,
                     messageText: text,
                     timestamp: msg.messageTimestamp ? new Date(Number(msg.messageTimestamp) * 1000) : new Date()
                   });
+
+                  // Detectar si el mensaje es de Darío (Admin) para enrutar a Antigravity
+                  const adminPhone = (process.env.ADMIN_PHONE || '5493885104530').replace(/[^\d]/g, '');
+                  const isAdmin = cleanPhone.includes('3885104530') || cleanPhone === adminPhone;
+                  
+                  if (isAdmin) {
+                    console.log(`[WhatsApp] 📥 ¡Nuevo prompt de Darío registrado para Antigravity!: "${text}"`);
+                    await db.saveInboxMessage({
+                      remoteJid,
+                      phone: cleanPhone,
+                      senderName: senderName || 'Darío',
+                      messageText: text
+                    });
+                  }
                 }
               }
             }
