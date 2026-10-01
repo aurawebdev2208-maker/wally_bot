@@ -11,11 +11,13 @@ const QRCode = require('qrcode');
 const fs = require('fs');
 const path = require('path');
 const db = require('./db');
+const { usePostgresAuthState } = require('./pgAuthState');
 
 class WhatsAppManager {
   constructor() {
     this.authFolder = path.join(__dirname, '..', 'auth_info_baileys');
     this.sock = null;
+    this.clearDbSession = null;
     this.state = {
       status: 'INITIALIZING', // INITIALIZING | QR_READY | CONNECTING | CONNECTED | DISCONNECTED | LOGGED_OUT
       qrCodeRaw: null,
@@ -62,8 +64,24 @@ class WhatsAppManager {
       this.state.lastError = null;
       this.notifyStateChange();
 
-      const { state: authState, saveCreds } = await useMultiFileAuthState(this.authFolder);
-      const { version, isLatest } = await fetchLatestBaileysVersion().catch(() => ({
+      let authState, saveCreds;
+
+      // 🐘 Si PostgreSQL está conectado, persistir sesión directamente en la Base de Datos
+      if (db.isConnected && db.pool) {
+        console.log('[WhatsApp] 🐘 Usando PostgreSQL para persistencia de sesión (sin necesidad de volúmenes Docker).');
+        const pgAuth = await usePostgresAuthState(db.pool, 'default');
+        authState = pgAuth.state;
+        saveCreds = pgAuth.saveCreds;
+        this.clearDbSession = pgAuth.clearSession;
+      } else {
+        console.log('[WhatsApp] 📁 Usando almacenamiento local en disco (auth_info_baileys).');
+        const fileAuth = await useMultiFileAuthState(this.authFolder);
+        authState = fileAuth.state;
+        saveCreds = fileAuth.saveCreds;
+        this.clearDbSession = null;
+      }
+
+      const { version } = await fetchLatestBaileysVersion().catch(() => ({
         version: [2, 3000, 1015901307],
         isLatest: true
       }));
@@ -177,7 +195,7 @@ class WhatsAppManager {
             this.state.qrCodeRaw = null;
             this.state.qrDataUrl = null;
             this.notifyStateChange();
-            await this.clearAuthFolder();
+            await this.clearCredentials();
             // Reiniciar automáticamente para generar un nuevo QR
             setTimeout(() => this.init(), 2000);
           } else {
@@ -275,14 +293,19 @@ class WhatsAppManager {
     }
   }
 
-  async clearAuthFolder() {
+  async clearCredentials() {
     try {
+      // Borrar de DB si está conectado
+      if (this.clearDbSession) {
+        await this.clearDbSession();
+      }
+      // Borrar de disco local
       if (fs.existsSync(this.authFolder)) {
         fs.rmSync(this.authFolder, { recursive: true, force: true });
         console.log('[WhatsApp] Carpeta de autenticación eliminada con éxito.');
       }
     } catch (err) {
-      console.error('[WhatsApp] Error borrando carpeta auth:', err);
+      console.error('[WhatsApp] Error borrando credenciales:', err);
     }
   }
 
@@ -298,7 +321,7 @@ class WhatsAppManager {
         this.sock.end(undefined);
         this.sock = null;
       }
-      await this.clearAuthFolder();
+      await this.clearCredentials();
       this.state = {
         status: 'LOGGED_OUT',
         qrCodeRaw: null,
