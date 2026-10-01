@@ -1,82 +1,12 @@
 [
   {
-    "id": "est_01",
-    "business": "Estética Integral Epiler",
-    "name": "Epiler Jujuy",
-    "niche": "Depilación Láser & Estética",
-    "location": "San Salvador de Jujuy (Macedonio Graz)",
-    "phone": "5493885050548",
-    "customMessage": "Hola, ¿cómo estás? Buenas tardes. Te escribo desde Aura Web Jujuy. Estuve viendo los tratamientos y la tecnología láser que ofrecen en Epiler y su trabajo es excelente. Les contacto porque creamos sitios web pensados para centros de estética, donde las pacientes pueden ver el catálogo de zonas y servicios, promociones vigentes y reservar turnos directo a su WhatsApp en 1 click sin intermediarios. ¿Te gustaría que les preparemos una propuesta/demo personalizada con sus servicios sin compromiso? Saludos!",
-    "status": "PENDING"
-  },
-  {
-    "id": "est_02",
-    "business": "SOLER Clínica Estética",
-    "name": "Clínica Soler",
-    "niche": "Medicina Estética & Láser ICE",
-    "location": "San Salvador de Jujuy (Los Perales)",
-    "phone": "5493884620118",
-    "customMessage": "Hola, ¿qué tal? Buenas tardes. Te contacto desde Aura Web Jujuy. Estuve viendo la clínica Soler en Los Perales y la calidad de sus tratamientos y tecnología láser ICE es de primer nivel. Nos especializamos en diseñar páginas web interactivas para clínicas estéticas, para que los pacientes puedan conocer el staff médico, ver testimonios y agendar consultas directo a su WhatsApp. ¿Les interesaría ver una demo adaptada para la clínica? Saludos cordiales!",
-    "status": "PENDING"
-  },
-  {
-    "id": "est_03",
-    "business": "Cemer Medicina Estética",
-    "name": "Equipo Cemer",
-    "niche": "Medicina Estética & Reparadora",
-    "location": "San Salvador de Jujuy (Centro)",
-    "phone": "5493884158017",
-    "customMessage": "Hola, ¿cómo están? Buenas tardes. Les escribo desde Aura Web Jujuy. Vi los tratamientos de medicina estética y dermatología que realizan en Cemer y tienen un prestigio excelente en la provincia. Desarrollamos sitios web médicos y estéticos de alta conversión orientados a transmitir máxima confianza y centralizar consultas directo por WhatsApp. ¿Les gustaría que les armemos una muestra digital para Cemer sin compromiso? Saludos!",
-    "status": "PENDING"
-  },
-  {
-    "id": "est_04",
-    "business": "Centro de Estética Gabriela Parola",
-    "name": "Gabriela Parola",
-    "niche": "Estética Facial & Corporal",
-    "location": "San Salvador de Jujuy (Pozo de Vargas)",
-    "phone": "5493884170353",
-    "customMessage": "Hola Gabriela, ¿qué tal? Buenas tardes. Te escribo desde Aura Web Jujuy. Estuve viendo el centro de estética y los resultados de sus tratamientos en redes. Ayudamos a profesionales de la estética a tener su propia web moderna con catálogo visual de servicios y reserva rápida a WhatsApp para no perder consultas de pacientes. ¿Te gustaría ver una propuesta personalizada para tu centro? Saludos!",
-    "status": "PENDING"
-  },
-  {
-    "id": "est_05",
-    "business": "MB Centro de Belleza",
-    "name": "Marcia Limpe",
-    "niche": "Cosmetología & Belleza",
-    "location": "San Salvador de Jujuy (Av. José de la Iglesia)",
-    "phone": "5493883387805",
-    "customMessage": "Hola Marcia, ¿cómo estás? Buenas tardes. Te contacto de Aura Web Jujuy. Vi los servicios y la dedicación que le ponen al centro de belleza en Av. José de la Iglesia. Creamos páginas web modernas adaptadas a celulares para que tus clientas puedan ver tratamientos, combos y agendar turnos directo en 1 click a tu WhatsApp. ¿Te interesaría ver una muestra sin compromiso? Saludos!",
-    "status": "PENDING"
-  },
-  {
-    "id": "est_06",
-    "business": "Sakura Beauty",
-    "name": "Sakura",
-    "niche": "Dermocosmética & Tratamientos Faciales",
-    "location": "Perico, Jujuy",
-    "phone": "5493885912798",
-    "customMessage": "Hola, ¿cómo estás? Buenas tardes. Te escribo desde Aura Web. Estuve viendo los tratamientos faciales y dermocosmética que realizan en Sakura Beauty y su presentación en redes está genial. Nos dedicamos a crear páginas web estéticas que posicionan tu marca como referente y facilitan que nuevas clientas reserven directo a tu WhatsApp. ¿Te gustaría que te preparemos una demo con sus servicios? Saludos!",
-    "status": "PENDING"
-  },
-  {
-    "id": "est_07",
-    "business": "Estética CIAC",
-    "name": "CIAC Salta",
-    "niche": "Medicina Estética & Láser Linscan",
-    "location": "Salta Capital",
-    "phone": "5493874816548",
-    "customMessage": "Hola, ¿qué tal? Buenas tardes. Les escribo desde Aura Web. Estuve viendo los tratamientos médicos y la tecnología en depilación láser que manejan en CIAC y su nivel es impecable. Desarrollamos sitios web para clínicas estéticas orientados a captar pacientes de alto valor y agendar citas directo a WhatsApp sin fricción. ¿Les interesaría evaluar una renovación o demo personalizada? Saludos cordiales!",
-    "status": "PENDING"
-  },
-  {
-    "id": "est_08",
-    "business": "DG Centro Estético",
-    "name": "DG Estética",
-    "niche": "Depilación Definitiva & Corporal",
-    "location": "Salta Capital",
-    "phone": "5493875612621",
-    "customMessage": "Hola, ¿cómo estás? Buenas tardes. Te contacto desde Aura Web. Estuve viendo los tratamientos corporales y depilación que ofrecen en DG Centro Estético. Creamos páginas web elegantes y rápidas para centros de estética pensadas para que las pacientes vean las promos del mes y consulten directo a tu WhatsApp. ¿Te gustaría que te comparta una muestra en vivo sin compromiso? Saludos!",
+    "id": "test_dentista_01",
+    "business": "Consultorio Odontológico San Salvador",
+    "name": "Dr. Darío",
+    "niche": "Odontología & Estética Dental",
+    "location": "San Salvador de Jujuy",
+    "phone": "5493885104530",
+    "customMessage": "Hola Dr. Darío, ¿cómo está? Buenas tardes. Le escribo desde Aura Web Jujuy. Estuve viendo su consultorio odontológico y el trabajo que realizan en la zona. Nos dedicamos a diseñar sitios web para clínicas dentales, con turnero interactivo directo a WhatsApp y presentación de tratamientos (ortodoncia, implantes, blanqueamiento). Desarrollamos una demo en vivo para consultorios de Jujuy: https://demo-odontologia-nine.vercel.app - ¿Le interesaría evaluar una propuesta personalizada para su clínica sin compromiso? Saludos cordiales!",
     "status": "PENDING"
   }
 ]
