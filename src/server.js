@@ -9,9 +9,29 @@ const campaign = require('./campaign');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const AUTH_USER = process.env.AUTH_USER || 'dorquera';
-const AUTH_PASSWORD = process.env.AUTH_PASSWORD || 'tuxx6393';
 const AUTH_SECRET = process.env.AUTH_SECRET || 'wally_bot_secret_aura_2026';
+
+function validateCredentials(username, password) {
+  if (!username || !password) return false;
+
+  const users = {
+    [process.env.AUTH_USER || 'dorquera']: process.env.AUTH_PASSWORD || 'tuxx6393',
+    [process.env.AUTH_ANTIG_USER || 'antig']: process.env.AUTH_ANTIG_PASSWORD || 'antig6393'
+  };
+
+  // Support additional comma-separated users if defined (user:pass,user2:pass2)
+  if (process.env.AUTH_USERS) {
+    const pairs = process.env.AUTH_USERS.split(',');
+    for (const pair of pairs) {
+      const [u, p] = pair.split(':');
+      if (u && p) {
+        users[u.trim()] = p.trim();
+      }
+    }
+  }
+
+  return users[username] && users[username] === password;
+}
 
 function generateToken(username) {
   const expiresAt = Date.now() + 1000 * 60 * 60 * 24 * 30; // 30 días
@@ -65,7 +85,7 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 // === API AUTH ===
 app.post('/api/auth/login', (req, res) => {
   const { username, password } = req.body || {};
-  if (username === AUTH_USER && password === AUTH_PASSWORD) {
+  if (validateCredentials(username, password)) {
     const token = generateToken(username);
     return res.json({
       success: true,
