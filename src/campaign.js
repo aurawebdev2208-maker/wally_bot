@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const whatsapp = require('./whatsapp');
+const db = require('./db');
 
 class CampaignManager {
   constructor() {
@@ -16,17 +17,30 @@ class CampaignManager {
       pending: 0,
       currentIndex: 0,
       currentProspect: null,
-      delaySeconds: 30, // Delay base recomendado
+      delaySeconds: parseInt(process.env.DEFAULT_DELAY_SECONDS || '30'),
       startedAt: null,
       finishedAt: null,
       logs: []
     };
     this.activeTimeout = null;
     this.prospectsQueue = [];
-    this.loadProspects();
+    this.initData();
   }
 
-  loadProspects() {
+  async initData() {
+    // Intentar cargar de la base de datos si está conectada
+    setTimeout(async () => {
+      const dbProspects = await db.getAllProspects();
+      if (dbProspects && dbProspects.length > 0) {
+        this.prospectsQueue = dbProspects;
+        console.log(`[Campaign] 🐘 ${dbProspects.length} prospectos sincronizados desde PostgreSQL.`);
+      } else {
+        this.loadProspectsFromFile();
+      }
+    }, 1000);
+  }
+
+  loadProspectsFromFile() {
     try {
       if (fs.existsSync(this.dataFile)) {
         const raw = fs.readFileSync(this.dataFile, 'utf8');
@@ -35,20 +49,27 @@ class CampaignManager {
         this.prospectsQueue = [];
       }
     } catch (err) {
-      console.error('[Campaign] Error loading prospects:', err);
+      console.error('[Campaign] Error loading prospects from file:', err);
       this.prospectsQueue = [];
     }
   }
 
-  saveProspects(prospects) {
+  async saveProspects(prospects) {
     this.prospectsQueue = prospects;
+    
+    // Guardar en archivo local
     try {
       fs.writeFileSync(this.dataFile, JSON.stringify(prospects, null, 2), 'utf8');
-      return true;
     } catch (err) {
-      console.error('[Campaign] Error saving prospects:', err);
-      return false;
+      console.error('[Campaign] Error saving prospects to file:', err);
     }
+
+    // Guardar en DB si está conectada
+    if (db.isConnected) {
+      await db.saveAllProspects(prospects);
+    }
+
+    return true;
   }
 
   getProspects() {
@@ -58,7 +79,8 @@ class CampaignManager {
   getStatus() {
     return {
       ...this.state,
-      prospectsCount: this.prospectsQueue.length
+      prospectsCount: this.prospectsQueue.length,
+      isDbConnected: db.isConnected
     };
   }
 
@@ -73,6 +95,11 @@ class CampaignManager {
     this.state.logs.unshift(logEntry);
     if (this.state.logs.length > 100) {
       this.state.logs.pop();
+    }
+
+    // Persistir log en DB
+    if (db.isConnected) {
+      db.insertLog(type, message, details);
     }
   }
 
@@ -90,7 +117,7 @@ class CampaignManager {
       throw new Error('No hay prospectos cargados en la lista.');
     }
 
-    const delaySec = Math.max(Number(options.delaySeconds) || 30, 15); // Mínimo 15 segundos por seguridad
+    const delaySec = Math.max(Number(options.delaySeconds) || this.state.delaySeconds, 15);
     const campaignName = options.campaignName || 'Aura Web Outreach';
 
     // Filtrar prospectos pendientes o nuevos
@@ -133,7 +160,7 @@ class CampaignManager {
       this.state.finishedAt = new Date().toISOString();
       this.state.currentProspect = null;
       this.addLog('success', `¡Campaña finalizada! Total enviados: ${this.state.sent}, Fallidos: ${this.state.failed}.`);
-      this.saveProspects(this.prospectsQueue);
+      await this.saveProspects(this.prospectsQueue);
       return;
     }
 
@@ -154,7 +181,7 @@ class CampaignManager {
 
       this.state.sent++;
       this.state.pending = this.prospectsQueue.filter(p => !p.status || p.status === 'PENDING').length;
-      this.saveProspects(this.prospectsQueue);
+      await this.saveProspects(this.prospectsQueue);
 
       this.addLog('success', `Mensaje enviado con éxito a ${prospect.name || prospect.business}`, { phone: prospect.phone });
     } catch (err) {
@@ -165,7 +192,7 @@ class CampaignManager {
 
       this.state.failed++;
       this.state.pending = this.prospectsQueue.filter(p => !p.status || p.status === 'PENDING').length;
-      this.saveProspects(this.prospectsQueue);
+      await this.saveProspects(this.prospectsQueue);
 
       this.addLog('error', `Error al enviar a ${prospect.name || prospect.business}: ${err.message}`, { phone: prospect.phone });
     }
