@@ -98,5 +98,105 @@
     "phone": "5493872207134",
     "customMessage": "Hola, ¿cómo están? Buenas tardes. Les escribo desde Aura Web. Nos dedicamos a diseñar sitios web para clínicas y centros odontológicos, con turnero interactivo directo a WhatsApp y catálogo estructurado de tratamientos para el paciente. Les comparto una demo en vivo para ver el funcionamiento: https://demo-odontologia-seven.vercel.app/ - Si les interesa ver una propuesta similar pensada para su consultorio, con gusto se las preparamos sin costo ni compromiso. ¡Saludos cordiales!",
     "status": "PENDING"
+  },
+  {
+    "id": "salta_dent_11",
+    "business": "Dra. Jimena Muratore - Odontología",
+    "name": "Dra. Jimena Muratore",
+    "niche": "Estética Dental & Prótesis",
+    "location": "20 de Febrero 731, Piso 2, Consultorio 13, Salta Capital",
+    "phone": "5493872202442",
+    "customMessage": "Hola Dra. Jimena, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Nos dedicamos al diseño y desarrollo de sitios web para odontólogos particulares, enfocados en presentar de forma clara sus tratamientos y permitir a los pacientes solicitar turnos fácilmente por WhatsApp desde el celular. Le comparto una demo en vivo de muestra: https://demo-odontologia-seven.vercel.app/ - Si le parece de utilidad para su práctica profesional, con gusto le preparamos una propuesta sin costo ni compromiso. ¡Que tenga un muy buen día!",
+    "status": "PENDING"
+  },
+  {
+    "id": "salta_dent_12",
+    "business": "Dr. Javier López Cohn - Odontología",
+    "name": "Dr. Javier López Cohn",
+    "niche": "Ortodoncia & Rehabilitación Oral",
+    "location": "Gral. Güemes 265, Oficina 2, Salta Capital",
+    "phone": "5493874442876",
+    "customMessage": "Hola Dr. Javier, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Ayudamos a profesionales odontólogos a contar con una página web moderna, rápida y adaptada a celulares, donde los pacientes puedan conocer sus servicios y coordinar turnos directos por WhatsApp. Le comparto una demo en vivo para que pueda ver cómo funciona: https://demo-odontologia-seven.vercel.app/ - Si le gustaría ver una maqueta pensada para su actividad, con gusto se la armamos sin compromiso. ¡Saludos cordiales!",
+    "status": "PENDING"
+  },
+  {
+    "id": "salta_dent_13",
+    "business": "Dra. María José Luzuriaga - Odontología",
+    "name": "Dra. María José Luzuriaga",
+    "niche": "Odontología General & Prevención",
+    "location": "Gral. Güemes 833, Salta Capital",
+    "phone": "5493876837887",
+    "customMessage": "Hola Dra. María José, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Creamos sitios web para profesionales de la odontología, pensados para ordenar la información de consultas y facilitar que los pacientes agenden citas directamente por WhatsApp. Le dejo una demo en vivo de referencia: https://demo-odontologia-seven.vercel.app/ - Si le interesa evaluar una propuesta para su consultorio, quedo a su entera disposición sin ningún compromiso. ¡Que tenga una excelente jornada!",
+    "status": "PENDING"
+  },
+  {
+    "id": "salta_dent_14",
+    "business": "Dra. Fernanda Vaca - Odontología",
+    "name": "Dra. Fernanda Vaca",
+    "niche": "Odontología Integral & Estética",
+    "location": "Gral. Güemes 1294, Salta Capital",
+    "phone": "5493875386265",
+    "customMessage": "Hola Dra. Fernanda, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Nos especializamos en páginas web para odontólogos, orientadas a brindar una imagen profesional y agilizar la recepción de turnos por WhatsApp desde dispositivos móviles. Le comparto una demo interactiva: https://demo-odontologia-seven.vercel.app/ - Si le resulta de interés, con gusto le armamos un modelo de muestra sin ningún compromiso. ¡Saludos cordiales!",
+    "status": "PENDING"
+  },
+  {
+    "id": "salta_dent_15",
+    "business": "Dra. Marina Musaime - Odontología",
+    "name": "Dra. Marina Soledad Musaime",
+    "niche": "Ortodoncia & Ortopedia Maxilar",
+    "location": "25 de Mayo 629, Salta Capital",
+    "phone": "5493875708128",
+    "customMessage": "Hola Dra. Marina, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Diseñamos plataformas web para especialistas en odontología y ortodoncia, con catálogo de tratamientos y botón directo para solicitar turnos por WhatsApp. Le acerco una demo en vivo: https://demo-odontologia-seven.vercel.app/ - Si le gustaría conocer cómo quedaría una opción adaptada a su atención profesional, avíseme y le armamos una propuesta sin compromiso. ¡Que tenga muy buena tarde!",
+    "status": "PENDING"
+  },
+  {
+    "id": "salta_dent_16",
+    "business": "Odontología Vázquez - Dra. Patricia Vázquez",
+    "name": "Dra. Patricia Vázquez",
+    "niche": "Odontología Integral & Endodoncia",
+    "location": "Córdoba 616, Salta Capital",
+    "phone": "5493874142754",
+    "customMessage": "Hola Dra. Patricia, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Desarrollamos sitios web para consultorios y profesionales odontológicos, optimizados para celulares y con turnero directo a WhatsApp para facilitar la llegada de consultas. Le comparto una demo en vivo para ver el formato: https://demo-odontologia-seven.vercel.app/ - Si le interesa, podemos prepararle una propuesta sin costo ni compromiso. ¡Saludos cordiales!",
+    "status": "PENDING"
+  },
+  {
+    "id": "salta_dent_17",
+    "business": "Dra. Cecilia Peña - Ortodoncia",
+    "name": "Dra. Cecilia Peña",
+    "niche": "Ortodoncia & Alineadores",
+    "location": "Salta Capital",
+    "phone": "5493875489257",
+    "customMessage": "Hola Dra. Cecilia, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Nos dedicamos a la creación de páginas web para odontólogos y especialistas en ortodoncia, diseñadas para mostrar casos, especialidades y agilizar turnos por WhatsApp. Le comparto un ejemplo en vivo: https://demo-odontologia-seven.vercel.app/ - Si le parece de utilidad para su práctica, con gusto le armamos una maqueta preliminar sin compromiso. ¡Que tenga un excelente día!",
+    "status": "PENDING"
+  },
+  {
+    "id": "salta_dent_18",
+    "business": "Consultorio Dra. Rosario Gutiérrez",
+    "name": "Dra. Rosario Gutiérrez",
+    "niche": "Odontología Integral & Estética Dental",
+    "location": "Gorriti 193, Salta Capital",
+    "phone": "5493874596697",
+    "customMessage": "Hola Dra. Rosario, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Diseñamos sitios web modernos para odontólogas y consultorios dentales, pensados para que los pacientes encuentren rápido la información y soliciten turnos directamente por WhatsApp. Le dejo una demo en vivo de muestra: https://demo-odontologia-seven.vercel.app/ - Si le gustaría ver una opción para su consultorio, quedo a su disposición sin compromiso. ¡Saludos cordiales!",
+    "status": "PENDING"
+  },
+  {
+    "id": "salta_dent_19",
+    "business": "Dr. Gonzalo Ocampo - Estética Odontológica",
+    "name": "Dr. Gonzalo Ocampo",
+    "niche": "Estética Dental & Restauraciones",
+    "location": "Salta Capital",
+    "phone": "5493875666962",
+    "customMessage": "Hola Dr. Gonzalo, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Creamos páginas web para odontólogos y especialistas en estética dental, enfocadas en una presentación visual clara y en facilitar la coordinación de turnos por WhatsApp desde el teléfono. Le comparto una demo en vivo: https://demo-odontologia-seven.vercel.app/ - Si le interesa evaluar una maqueta sin costo ni compromiso, con gusto se la preparamos. ¡Saludos y que tenga un buen día!",
+    "status": "PENDING"
+  },
+  {
+    "id": "salta_dent_20",
+    "business": "Odontología Integral Zuviría",
+    "name": "Dra. Romina & Equipo",
+    "niche": "Odontología General & Cirugía",
+    "location": "Zuviría 352, Salta Capital",
+    "phone": "5493875736492",
+    "customMessage": "Hola, ¿cómo están? Buenas tardes. Les escribo desde Aura Web. Desarrollamos páginas web para profesionales y centros odontológicos, con diseño adaptado a móviles y turnero directo a WhatsApp para simplificar las consultas de los pacientes. Les comparto una demo en vivo para que puedan ver el funcionamiento: https://demo-odontologia-seven.vercel.app/ - Si les parece interesante, podemos armarles una propuesta sin ningún compromiso. ¡Que tengan una muy buena jornada!",
+    "status": "PENDING"
   }
 ]
