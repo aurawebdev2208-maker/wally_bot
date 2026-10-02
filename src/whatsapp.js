@@ -4,7 +4,8 @@ const {
   DisconnectReason,
   fetchLatestBaileysVersion,
   Browsers,
-  delay
+  delay,
+  downloadMediaMessage
 } = require('@whiskeysockets/baileys');
 const pino = require('pino');
 const QRCode = require('qrcode');
@@ -12,6 +13,7 @@ const fs = require('fs');
 const path = require('path');
 const db = require('./db');
 const { usePostgresAuthState } = require('./pgAuthState');
+const { transcribeAudio } = require('./transcriber');
 
 class WhatsAppManager {
   constructor() {
@@ -117,14 +119,36 @@ class WhatsAppManager {
 
                 const isImage = Boolean(msg.message?.imageMessage);
                 const isDocument = Boolean(msg.message?.documentMessage);
-                const isAudio = Boolean(msg.message?.audioMessage);
+                const isAudio = Boolean(msg.message?.audioMessage || msg.message?.ptvMessage);
 
-                if (!text && isImage) {
+                if (isAudio) {
+                  try {
+                    console.log(`[WhatsApp] 🎙️ Procesando audio de ${msg.pushName || 'Usuario'}...`);
+                    const audioBuffer = await downloadMediaMessage(
+                      msg,
+                      'buffer',
+                      {},
+                      { logger: pino({ level: 'silent' }), reuploadRequest: this.sock.updateMediaMessage }
+                    );
+                    if (audioBuffer) {
+                      const mime = msg.message?.audioMessage?.mimetype || 'audio/ogg; codecs=opus';
+                      const transcribed = await transcribeAudio(audioBuffer, mime);
+                      if (transcribed) {
+                        text = `[🎤 Nota de voz]: "${transcribed}"`;
+                      } else {
+                        text = '[🎤 Nota de voz / Audio]';
+                      }
+                    } else {
+                      text = '[🎤 Nota de voz / Audio]';
+                    }
+                  } catch (audioErr) {
+                    console.error('[WhatsApp] Error descargando o transcribiendo audio:', audioErr.message);
+                    text = '[🎤 Nota de voz / Audio]';
+                  }
+                } else if (!text && isImage) {
                   text = '[📸 Imagen adjunta sin texto]';
                 } else if (!text && isDocument) {
                   text = `[📄 Documento: ${msg.message?.documentMessage?.fileName || 'archivo adjunto'}]`;
-                } else if (!text && isAudio) {
-                  text = '[🎤 Nota de voz / Audio]';
                 } else if (isImage && text) {
                   text = `[📸 Imagen] ${text}`;
                 }
