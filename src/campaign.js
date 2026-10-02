@@ -3,6 +3,18 @@ const path = require('path');
 const whatsapp = require('./whatsapp');
 const db = require('./db');
 
+function parseSpintax(text) {
+  if (!text) return '';
+  const spintaxRegex = /\{([^{}]+)\}/g;
+  let matches;
+  while ((matches = spintaxRegex.exec(text)) !== null) {
+    const choices = matches[1].split('|');
+    const randomChoice = choices[Math.floor(Math.random() * choices.length)].trim();
+    text = text.replace(matches[0], randomChoice);
+  }
+  return text;
+}
+
 class CampaignManager {
   constructor() {
     this.dataFile = path.join(__dirname, '..', 'prospects.json');
@@ -17,7 +29,9 @@ class CampaignManager {
       pending: 0,
       currentIndex: 0,
       currentProspect: null,
-      delaySeconds: parseInt(process.env.DEFAULT_DELAY_SECONDS || '30'),
+      delaySeconds: parseInt(process.env.DEFAULT_DELAY_SECONDS || '60'),
+      maxBatchSize: 15,
+      batchSentCount: 0,
       startedAt: null,
       finishedAt: null,
       logs: []
@@ -28,24 +42,10 @@ class CampaignManager {
   }
 
   async initData() {
-    // Intentar cargar de la base de datos si está conectada
     setTimeout(async () => {
       const dbProspects = await db.getAllProspects();
       if (dbProspects && dbProspects.length > 0) {
-        // Verificar si contiene caracteres corruptos (diamantes de reemplazo UTF-8)
-        const hasCorruptedChars = dbProspects.some(p => 
-          (p.business && (p.business.includes('') || p.business.includes('\uFFFD'))) ||
-          (p.niche && (p.niche.includes('') || p.niche.includes('\uFFFD'))) ||
-          (p.customMessage && (p.customMessage.includes('') || p.customMessage.includes('\uFFFD')))
-        );
-
-        if (hasCorruptedChars) {
-          console.log('[Campaign] ⚠️ Se detectaron caracteres corruptos en BD. Restaurando desde prospects.json con UTF-8 limpio...');
-          this.loadProspectsFromFile();
-          await db.saveAllProspects(this.prospectsQueue);
-        } else {
-          this.prospectsQueue = dbProspects;
-        }
+        this.prospectsQueue = dbProspects;
         console.log(`[Campaign] 🐘 ${this.prospectsQueue.length} prospectos sincronizados correctamente.`);
       } else {
         this.loadProspectsFromFile();
@@ -94,18 +94,15 @@ class CampaignManager {
       niche: this.normalizeMacroNiche(p.niche || p.group)
     }));
     
-    // Guardar en archivo local
     try {
       fs.writeFileSync(this.dataFile, JSON.stringify(this.prospectsQueue, null, 2), 'utf8');
     } catch (err) {
-      console.error('[Campaign] Error saving prospects to file:', err);
+      console.error('[Campaign] Error guardando prospects.json local:', err.message);
     }
 
-    // Guardar en DB si está conectada
     if (db.isConnected) {
       await db.saveAllProspects(this.prospectsQueue);
     }
-
     return true;
   }
 
@@ -114,45 +111,28 @@ class CampaignManager {
   }
 
   getGroups() {
-    const groupMap = {};
+    const groups = {};
     for (const p of this.prospectsQueue) {
-      const groupName = this.normalizeMacroNiche(p.niche || p.group);
-      if (!groupMap[groupName]) {
-        groupMap[groupName] = {
-          name: groupName,
-          total: 0,
-          pending: 0,
-          sent: 0,
-          failed: 0
-        };
+      const g = p.niche || p.group || 'General';
+      if (!groups[g]) {
+        groups[g] = { total: 0, pending: 0, sent: 0, failed: 0 };
       }
-      groupMap[groupName].total++;
-      if (p.status === 'SENT') groupMap[groupName].sent++;
-      else if (p.status === 'FAILED') groupMap[groupName].failed++;
-      else groupMap[groupName].pending++;
+      groups[g].total++;
+      if (p.status === 'SENT') groups[g].sent++;
+      else if (p.status === 'FAILED') groups[g].failed++;
+      else groups[g].pending++;
     }
-    return Object.values(groupMap);
-  }
-
-  async batchAssignGroup(prospectIds, newGroupName) {
-    if (!Array.isArray(prospectIds) || !newGroupName) return false;
-    let modified = false;
-    const cleanGroup = this.normalizeMacroNiche(newGroupName);
-    for (const p of this.prospectsQueue) {
-      if (prospectIds.includes(p.id)) {
-        p.niche = cleanGroup;
-        modified = true;
-      }
-    }
-    if (modified) {
-      await this.saveProspects(this.prospectsQueue);
-    }
-    return true;
+    return Object.entries(groups).map(([name, stats]) => ({
+      name,
+      ...stats
+    }));
   }
 
   getStatus() {
+    const activeWs = whatsapp.getStatus();
     return {
       ...this.state,
+      isWhatsAppConnected: activeWs.status === 'CONNECTED',
       prospectsCount: this.prospectsQueue.length,
       groups: this.getGroups(),
       isDbConnected: db.isConnected
@@ -160,22 +140,26 @@ class CampaignManager {
   }
 
   addLog(type, message, details = {}) {
-    const logEntry = {
-      id: Date.now() + Math.random().toString(36).substring(2, 6),
-      timestamp: new Date().toLocaleTimeString('es-AR'),
+    const logItem = {
+      id: Date.now().toString() + Math.random().toString(36).substring(2, 6),
+      timestamp: new Date().toLocaleTimeString('es-AR', { hour12: false }),
       type, // 'info' | 'success' | 'warning' | 'error'
       message,
       details
     };
-    this.state.logs.unshift(logEntry);
-    if (this.state.logs.length > 100) {
+
+    this.state.logs.unshift(logItem);
+    if (this.state.logs.length > 200) {
       this.state.logs.pop();
     }
 
-    // Persistir log en DB
     if (db.isConnected) {
       db.insertLog(type, message, details);
     }
+
+    try {
+      fs.writeFileSync(this.logsFile, JSON.stringify(this.state.logs, null, 2), 'utf8');
+    } catch (err) {}
   }
 
   async start(options = {}) {
@@ -192,13 +176,13 @@ class CampaignManager {
       throw new Error('No hay prospectos cargados en la lista.');
     }
 
-    const delaySec = Math.max(Number(options.delaySeconds) || this.state.delaySeconds, 15);
+    const delaySec = Math.max(Number(options.delaySeconds) || this.state.delaySeconds, 30);
+    const maxBatch = Math.min(Number(options.maxBatchSize) || 15, 20); // Máximo 15-20 por tanda para evitar bloqueos
     const campaignName = options.campaignName || 'Aura Web Outreach';
     const targetGroup = options.targetGroup && options.targetGroup !== 'ALL' ? options.targetGroup : null;
 
-    // Filtrar prospectos pendientes que pertenezcan al grupo objetivo (si se eligió uno)
     const pendingList = this.prospectsQueue.filter(p => {
-      const isPending = !p.status || p.status === 'PENDING' || p.status === 'FAILED';
+      const isPending = !p.status || p.status === 'PENDING';
       if (!isPending) return false;
       if (!targetGroup) return true;
       const groupName = p.niche || p.group || 'General';
@@ -208,7 +192,7 @@ class CampaignManager {
     if (pendingList.length === 0) {
       throw new Error(targetGroup 
         ? `No hay prospectos pendientes en el grupo "${targetGroup}".`
-        : 'Todos los prospectos en la lista ya fueron marcados como enviados.');
+        : 'Todos los prospectos en la lista ya fueron procesados.');
     }
 
     const groupProspects = targetGroup 
@@ -227,13 +211,15 @@ class CampaignManager {
       currentIndex: 0,
       currentProspect: null,
       delaySeconds: delaySec,
+      maxBatchSize: maxBatch,
+      batchSentCount: 0,
       startedAt: new Date().toISOString(),
       finishedAt: null,
       logs: this.state.logs
     };
 
     const targetLabel = targetGroup ? `Grupo "${targetGroup}"` : 'Todos los grupos';
-    this.addLog('info', `Iniciando campaña para ${targetLabel} con ${pendingList.length} prospectos pendientes. Delay de seguridad: ${delaySec}s.`);
+    this.addLog('info', `Iniciando campaña anti-bloqueo para ${targetLabel}. Lote máximo: ${maxBatch} envíos. Delay: ${delaySec}s.`);
 
     this.processNext();
     return this.getStatus();
@@ -241,6 +227,16 @@ class CampaignManager {
 
   async processNext() {
     if (!this.state.isRunning || this.state.isPaused) return;
+
+    // Verificar si se alcanzó el límite del lote de seguridad
+    if (this.state.batchSentCount >= this.state.maxBatchSize) {
+      this.state.isRunning = false;
+      this.state.finishedAt = new Date().toISOString();
+      this.state.currentProspect = null;
+      this.addLog('warning', `🛑 Lote de seguridad completado (${this.state.batchSentCount} envíos). La campaña se pausó automáticamente para proteger tu número de WhatsApp.`);
+      await this.saveProspects(this.prospectsQueue);
+      return;
+    }
 
     // Buscar el siguiente prospecto pendiente del grupo objetivo
     const prospect = this.prospectsQueue.find(p => {
@@ -262,13 +258,16 @@ class CampaignManager {
 
     this.state.currentProspect = prospect;
     const groupName = prospect.niche || prospect.group || 'General';
-    this.addLog('info', `Preparando envío a [${groupName}]: ${prospect.name || prospect.business} (${prospect.phone})...`);
+    this.addLog('info', `Preparando envío (${this.state.batchSentCount + 1}/${this.state.maxBatchSize}) a [${groupName}]: ${prospect.name || prospect.business} (${prospect.phone})...`);
 
     try {
-      const messageText = prospect.customMessage || prospect.message;
-      if (!messageText) {
+      let rawText = prospect.customMessage || prospect.message;
+      if (!rawText) {
         throw new Error('El prospecto no tiene mensaje configurado.');
       }
+
+      // Aplicar spintax dinámico para variar sutilmente el mensaje y evitar hash idéntico
+      const messageText = parseSpintax(rawText);
 
       const result = await whatsapp.sendTextMessage(prospect.phone, messageText, { simulateTyping: true });
 
@@ -277,6 +276,7 @@ class CampaignManager {
       prospect.messageId = result.messageId;
 
       this.state.sent++;
+      this.state.batchSentCount++;
       const targetGroup = this.state.targetGroup && this.state.targetGroup !== 'ALL' ? this.state.targetGroup.toLowerCase() : null;
       this.state.pending = this.prospectsQueue.filter(p => {
         const isPending = !p.status || p.status === 'PENDING';
@@ -308,9 +308,9 @@ class CampaignManager {
       this.addLog('error', `Error al enviar a ${prospect.name || prospect.business}: ${err.message}`, { phone: prospect.phone });
     }
 
-    // Calcular delay aleatorio humano (ej: 30s +/- 5s)
-    const randomJitter = Math.floor(Math.random() * 10) - 5;
-    const waitTimeSeconds = Math.max(this.state.delaySeconds + randomJitter, 15);
+    // Calcular delay aleatorio humano (ej: 45s +/- 15s)
+    const randomJitter = Math.floor(Math.random() * 20) - 10;
+    const waitTimeSeconds = Math.max(this.state.delaySeconds + randomJitter, 30);
 
     this.addLog('info', `Pausa de seguridad anti-bloqueo: esperando ${waitTimeSeconds} segundos antes del próximo envío...`);
 
@@ -339,15 +339,15 @@ class CampaignManager {
   }
 
   stop() {
-    this.state.isRunning = false;
-    this.state.isPaused = false;
-    this.state.currentProspect = null;
     if (this.activeTimeout) {
       clearTimeout(this.activeTimeout);
       this.activeTimeout = null;
     }
+    this.state.isRunning = false;
+    this.state.isPaused = false;
+    this.state.currentProspect = null;
+    this.state.finishedAt = new Date().toISOString();
     this.addLog('warning', 'Campaña detenida por el usuario.');
-    this.saveProspects(this.prospectsQueue);
     return this.getStatus();
   }
 }
