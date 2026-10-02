@@ -589,6 +589,12 @@
         <span id="dialogLoadingStatusText" class="font-medium">Procesando...</span>
       </div>
 
+      <!-- Error Alert Box (Shown on action failure) -->
+      <div id="dialogErrorAlert" class="hidden p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-start gap-2">
+        <span class="material-symbols-outlined text-base flex-shrink-0 mt-0.5">error</span>
+        <span id="dialogErrorMessage" class="leading-tight">Error al procesar la solicitud</span>
+      </div>
+
       <!-- Prompt Input Container (Hidden in Confirm / Alert mode) -->
       <div id="dialogPromptContainer" class="hidden space-y-1.5 pt-1">
         <label id="dialogPromptLabel" class="block text-xs font-semibold text-slate-300">Dato requerido:</label>
@@ -597,10 +603,10 @@
       </div>
 
       <div class="pt-2 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 border-t border-slate-800/80">
-        <button id="dialogBtnCancel" type="button" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition text-center active:scale-95 cursor-pointer">
+        <button id="dialogBtnCancel" type="button" onclick="handleDialogCancelClick(event)" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition text-center active:scale-95 cursor-pointer">
           Cancelar
         </button>
-        <button id="dialogBtnConfirm" type="button" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold text-xs transition shadow-lg shadow-emerald-600/20 text-center active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer">
+        <button id="dialogBtnConfirm" type="button" onclick="handleDialogConfirmClick(event)" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold text-xs transition shadow-lg shadow-emerald-600/20 text-center active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer">
           <span id="dialogBtnConfirmText">Confirmar</span>
         </button>
       </div>
@@ -681,6 +687,47 @@
     }
 
     // === MODERN UNIVERSAL CONFIRM & PROMPT MODALS ===
+    let currentDialogConfirmHandler = null;
+    let currentDialogCancelHandler = null;
+
+    function handleDialogConfirmClick(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      if (typeof currentDialogConfirmHandler === 'function') {
+        currentDialogConfirmHandler();
+      }
+    }
+
+    function handleDialogCancelClick(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      if (typeof currentDialogCancelHandler === 'function') {
+        currentDialogCancelHandler();
+      } else {
+        closeCustomDialog();
+      }
+    }
+
+    function closeCustomDialog() {
+      const modal = document.getElementById('customDialogModal');
+      const box = document.getElementById('customDialogBox');
+      const loadingStatus = document.getElementById('dialogLoadingStatus');
+      const errorBox = document.getElementById('dialogErrorAlert');
+      if (!modal || !box) return;
+
+      modal.classList.add('opacity-0');
+      box.classList.add('scale-95');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        if (loadingStatus) loadingStatus.classList.add('hidden');
+        if (errorBox) errorBox.classList.add('hidden');
+      }, 250);
+    }
+
     function showModernConfirm({ title, message, icon = 'help', confirmText = 'Confirmar', cancelText = 'Cancelar', confirmClass = 'bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold', iconClass = 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20', onConfirm }) {
       const modal = document.getElementById('customDialogModal');
       const box = document.getElementById('customDialogBox');
@@ -691,8 +738,10 @@
       const promptContainer = document.getElementById('dialogPromptContainer');
       const loadingStatus = document.getElementById('dialogLoadingStatus');
       const loadingStatusText = document.getElementById('dialogLoadingStatusText');
+      const errorBox = document.getElementById('dialogErrorAlert');
       const btnCancel = document.getElementById('dialogBtnCancel');
       const btnConfirm = document.getElementById('dialogBtnConfirm');
+      const btnConfirmText = document.getElementById('dialogBtnConfirmText');
 
       titleEl.textContent = title;
       msgEl.innerHTML = message;
@@ -700,14 +749,16 @@
       iconBox.className = `w-10 h-10 rounded-xl border flex items-center justify-center flex-shrink-0 ${iconClass}`;
       
       promptContainer.classList.add('hidden');
-      loadingStatus.classList.add('hidden');
+      if (loadingStatus) loadingStatus.classList.add('hidden');
+      if (errorBox) errorBox.classList.add('hidden');
+
       btnCancel.classList.remove('hidden');
       btnCancel.textContent = cancelText;
       btnCancel.disabled = false;
 
       btnConfirm.disabled = false;
       btnConfirm.className = `px-5 py-2.5 rounded-xl font-bold text-xs transition shadow-lg text-center active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer ${confirmClass}`;
-      btnConfirm.innerHTML = `<span id="dialogBtnConfirmText">${confirmText}</span>`;
+      btnConfirmText.textContent = confirmText;
 
       modal.classList.remove('hidden');
       requestAnimationFrame(() => {
@@ -715,42 +766,42 @@
         box.classList.remove('scale-95');
       });
 
-      function close() {
-        modal.classList.add('opacity-0');
-        box.classList.add('scale-95');
-        setTimeout(() => {
-          modal.classList.add('hidden');
-          loadingStatus.classList.add('hidden');
-        }, 250);
-      }
+      currentDialogCancelHandler = closeCustomDialog;
 
-      btnCancel.onclick = close;
-      btnConfirm.onclick = async () => {
+      currentDialogConfirmHandler = async () => {
+        if (errorBox) errorBox.classList.add('hidden');
         try {
           btnConfirm.disabled = true;
           btnCancel.disabled = true;
           btnConfirm.classList.add('opacity-80', 'cursor-not-allowed');
-          btnConfirm.innerHTML = `<span class="material-symbols-outlined text-[16px] animate-spin">sync</span><span>Procesando...</span>`;
-          loadingStatus.classList.remove('hidden');
-          loadingStatusText.textContent = 'Procesando solicitud...';
+          btnConfirmText.textContent = 'Procesando...';
+          if (loadingStatus) {
+            loadingStatus.classList.remove('hidden');
+            if (loadingStatusText) loadingStatusText.textContent = 'Procesando solicitud...';
+          }
 
           if (onConfirm) {
             await onConfirm({
               setLoadingText: (txt) => {
-                btnConfirm.innerHTML = `<span class="material-symbols-outlined text-[16px] animate-spin">sync</span><span>${txt}</span>`;
-                loadingStatusText.textContent = txt;
+                btnConfirmText.textContent = txt;
+                if (loadingStatusText) loadingStatusText.textContent = txt;
               }
             });
           }
-          close();
+          closeCustomDialog();
         } catch (err) {
           console.error('Error in confirm action:', err);
-          loadingStatus.classList.add('hidden');
+          if (loadingStatus) loadingStatus.classList.add('hidden');
+          if (errorBox) {
+            const errorMsg = document.getElementById('dialogErrorMessage');
+            if (errorMsg) errorMsg.textContent = err.message || 'Error al procesar la acción.';
+            errorBox.classList.remove('hidden');
+          }
         } finally {
           btnConfirm.disabled = false;
           btnCancel.disabled = false;
           btnConfirm.classList.remove('opacity-80', 'cursor-not-allowed');
-          btnConfirm.innerHTML = `<span id="dialogBtnConfirmText">${confirmText}</span>`;
+          btnConfirmText.textContent = confirmText;
         }
       };
     }
@@ -768,8 +819,10 @@
       const promptHint = document.getElementById('dialogPromptHint');
       const loadingStatus = document.getElementById('dialogLoadingStatus');
       const loadingStatusText = document.getElementById('dialogLoadingStatusText');
+      const errorBox = document.getElementById('dialogErrorAlert');
       const btnCancel = document.getElementById('dialogBtnCancel');
       const btnConfirm = document.getElementById('dialogBtnConfirm');
+      const btnConfirmText = document.getElementById('dialogBtnConfirmText');
 
       titleEl.textContent = title;
       msgEl.innerHTML = message;
@@ -777,7 +830,9 @@
       iconBox.className = 'w-10 h-10 rounded-xl border flex items-center justify-center flex-shrink-0 text-cyan-400 bg-cyan-500/10 border-cyan-500/20';
 
       promptContainer.classList.remove('hidden');
-      loadingStatus.classList.add('hidden');
+      if (loadingStatus) loadingStatus.classList.add('hidden');
+      if (errorBox) errorBox.classList.add('hidden');
+
       promptLabel.textContent = label;
       promptInput.value = defaultValue || '3885104530';
       promptInput.placeholder = placeholder || '3885104530';
@@ -790,7 +845,7 @@
 
       btnConfirm.disabled = false;
       btnConfirm.className = 'px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs transition shadow-lg shadow-cyan-600/20 text-center active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer';
-      btnConfirm.innerHTML = `<span id="dialogBtnConfirmText">${confirmText}</span>`;
+      btnConfirmText.textContent = confirmText;
 
       modal.classList.remove('hidden');
       requestAnimationFrame(() => {
@@ -800,56 +855,56 @@
         promptInput.select();
       });
 
-      function close() {
-        modal.classList.add('opacity-0');
-        box.classList.add('scale-95');
-        setTimeout(() => {
-          modal.classList.add('hidden');
-          loadingStatus.classList.add('hidden');
-        }, 250);
-      }
+      currentDialogCancelHandler = closeCustomDialog;
 
-      btnCancel.onclick = close;
-      btnConfirm.onclick = async () => {
+      currentDialogConfirmHandler = async () => {
         const val = promptInput.value.trim() || defaultValue || '3885104530';
+        if (errorBox) errorBox.classList.add('hidden');
 
         try {
           btnConfirm.disabled = true;
           btnCancel.disabled = true;
           promptInput.disabled = true;
           btnConfirm.classList.add('opacity-80', 'cursor-not-allowed');
-          btnConfirm.innerHTML = `<span class="material-symbols-outlined text-[16px] animate-spin">sync</span><span>Enviando...</span>`;
-          loadingStatus.classList.remove('hidden');
-          loadingStatusText.textContent = 'Conectando con WhatsApp y enviando...';
+          btnConfirmText.textContent = 'Enviando...';
+          if (loadingStatus) {
+            loadingStatus.classList.remove('hidden');
+            if (loadingStatusText) loadingStatusText.textContent = 'Conectando con WhatsApp y enviando...';
+          }
 
           if (onConfirm) {
             await onConfirm(val, {
               setLoadingText: (txt) => {
-                btnConfirm.innerHTML = `<span class="material-symbols-outlined text-[16px] animate-spin">sync</span><span>${txt}</span>`;
-                loadingStatusText.textContent = txt;
+                btnConfirmText.textContent = txt;
+                if (loadingStatusText) loadingStatusText.textContent = txt;
               }
             });
           }
-          close();
+          closeCustomDialog();
         } catch (err) {
-          console.error('Error in prompt action:', err);
-          loadingStatus.classList.add('hidden');
+          console.error('Error in prompt confirm:', err);
+          if (loadingStatus) loadingStatus.classList.add('hidden');
+          if (errorBox) {
+            const errorMsg = document.getElementById('dialogErrorMessage');
+            if (errorMsg) errorMsg.textContent = err.message || 'Error al enviar el mensaje de prueba.';
+            errorBox.classList.remove('hidden');
+          }
         } finally {
           btnConfirm.disabled = false;
           btnCancel.disabled = false;
           promptInput.disabled = false;
           btnConfirm.classList.remove('opacity-80', 'cursor-not-allowed');
-          btnConfirm.innerHTML = `<span id="dialogBtnConfirmText">${confirmText}</span>`;
+          btnConfirmText.textContent = confirmText;
         }
       };
 
       promptInput.onkeydown = (ev) => {
         if (ev.key === 'Enter') {
           ev.preventDefault();
-          btnConfirm.click();
+          handleDialogConfirmClick(ev);
         } else if (ev.key === 'Escape') {
           ev.preventDefault();
-          btnCancel.click();
+          handleDialogCancelClick(ev);
         }
       };
     }
