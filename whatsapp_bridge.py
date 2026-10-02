@@ -75,7 +75,8 @@ class WhatsAppBridge:
 
     def send_reply(self, message, phone=ADMIN_PHONE):
         try:
-            data = json.dumps({'phone': phone, 'message': message}).encode('utf-8')
+            clean_message = message.replace('\\n', '\n')
+            data = json.dumps({'phone': phone, 'message': clean_message}).encode('utf-8')
             req = urllib.request.Request(f"{self.base_url}/api/send", data=data, headers=self.headers)
             res = urllib.request.urlopen(req, context=self.ctx)
             json_res = json.loads(res.read().decode('utf-8'))

@@ -109,9 +109,26 @@ class WhatsAppManager {
           if (m.type === 'notify') {
             for (const msg of m.messages) {
               if (!msg.key.fromMe) {
-                const text = msg.message?.conversation ||
-                             msg.message?.extendedTextMessage?.text ||
-                             msg.message?.imageMessage?.caption || '';
+                let text = msg.message?.conversation ||
+                           msg.message?.extendedTextMessage?.text ||
+                           msg.message?.imageMessage?.caption ||
+                           msg.message?.videoMessage?.caption ||
+                           msg.message?.documentMessage?.caption || '';
+
+                const isImage = Boolean(msg.message?.imageMessage);
+                const isDocument = Boolean(msg.message?.documentMessage);
+                const isAudio = Boolean(msg.message?.audioMessage);
+
+                if (!text && isImage) {
+                  text = '[📸 Imagen adjunta sin texto]';
+                } else if (!text && isDocument) {
+                  text = `[📄 Documento: ${msg.message?.documentMessage?.fileName || 'archivo adjunto'}]`;
+                } else if (!text && isAudio) {
+                  text = '[🎤 Nota de voz / Audio]';
+                } else if (isImage && text) {
+                  text = `[📸 Imagen] ${text}`;
+                }
+
                 const remoteJid = msg.key.remoteJid;
                 const senderName = msg.pushName || 'Cliente';
 
@@ -130,7 +147,7 @@ class WhatsAppManager {
                     timestamp: msg.messageTimestamp ? new Date(Number(msg.messageTimestamp) * 1000) : new Date()
                   });
 
-                  // Guardar en agent_inbox para Antigravity (todos los mensajes privados / WhatsApp LIDs)
+                  // Guardar en agent_inbox para Antigravity
                   console.log(`[WhatsApp] 📥 ¡Nuevo prompt registrado para Antigravity!: "${text}" de ${remoteJid}`);
                   await db.saveInboxMessage({
                     remoteJid,
