@@ -65,7 +65,7 @@ def is_real_website(url):
         return False
     return True
 
-def generate_custom_message(name, business_name, has_real_web, website_url, demo_url="https://demo-odontologia-seven.vercel.app/"):
+def generate_custom_message(name, business_name, has_real_web, website_url, demo_url="https://auradev.online/demo/odontologia/"):
     """
     Genera el mensaje personalizado cordial, ameno y directo según si tiene web propia o no.
     """
@@ -84,7 +84,7 @@ def generate_custom_message(name, business_name, has_real_web, website_url, demo
         msg = (
             f"{saludo} Le escribo desde Aura Web. "
             f"Nos especializamos en el desarrollo de páginas web modernas para profesionales y clínicas odontológicas. "
-            f"Diseñamos plataformas ágiles para celulares con catálogo de especialidades y botón directo para solicitar turnos por WhatsApp. "
+            f"Diseñamos plataformas ágiles para celulares con selector de tratamientos, cotizador de cuotas y botón directo para solicitar turnos por WhatsApp. "
             f"Le comparto una demo en vivo de muestra: {demo_url} - "
             f"Si le gustaría ver una maqueta pensada para {business_name} sin costo ni compromiso, quedo a su disposición. ¡Que tenga una excelente jornada!"
         )

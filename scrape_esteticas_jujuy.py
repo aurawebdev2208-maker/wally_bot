@@ -55,22 +55,24 @@ def is_real_website(url):
         return False
     return True
 
-def generate_custom_message(name, business_name, has_real_web, website_url):
-    saludo = f"Hola {name}, ¿cómo estás? Buenas tardes." if name else "Hola, ¿cómo están? Buenas tardes."
+def generate_custom_message(name, business_name, has_real_web, website_url, demo_url="https://auradev.online/demo/estetica/"):
+    saludo = f"Hola {name}, ¿cómo estás? Buenas tardes." if name and name != "Profesional" else "Hola, ¿cómo están? Buenas tardes."
     
     if has_real_web and website_url:
         msg = (
             f"{saludo} Te escribo desde Aura Web. "
             f"Estuvimos viendo el perfil de {business_name} y notamos que se beneficiaría mucho de una web mobile-first de alto impacto, "
-            f"con catálogo interactivo de tratamientos (faciales, corporales, aparatología) y turnero directo a WhatsApp para que tus clientas reserven al instante. "
-            f"Si te parece interesante evaluar una propuesta o rediseño sin compromiso, con gusto te armamos una maqueta. ¡Saludos cordiales!"
+            f"con cotizador interactivo de depilación láser en 3 pasos, catálogo de tratamientos y turnero directo a WhatsApp para que tus clientas reserven al instante. "
+            f"Te comparto una demo en vivo de cómo diseñamos para estética: {demo_url} - "
+            f"Si te parece interesante evaluar una propuesta o rediseño sin compromiso para {business_name}, con gusto te armamos una maqueta. ¡Saludos cordiales!"
         )
     else:
         msg = (
             f"{saludo} Te escribo desde Aura Web. "
-            f"Nos especializamos en el desarrollo de páginas web modernas para centros de estética, cosmetología y spas. "
-            f"Diseñamos sitios ágiles para celulares con galería de antes y después, catálogo de servicios y botón directo para solicitar turnos por WhatsApp. "
-            f"Si te gustaría ver una maqueta pensada para {business_name} sin costo ni compromiso, quedo a tu disposición. ¡Que tengas una excelente jornada!"
+            f"Nos especializamos en el desarrollo de páginas web modernas para centros de estética, medicina estética y spas. "
+            f"Diseñamos sitios ágiles para celulares con cotizador interactivo de depilación láser, catálogo de tratamientos y botón directo para solicitar turnos por WhatsApp. "
+            f"Te comparto una demo en vivo de muestra: {demo_url} - "
+            f"Si te gustaría ver una propuesta pensada para {business_name} sin costo ni compromiso, quedo a tu disposición. ¡Que tengas una excelente jornada!"
         )
     return msg
 
