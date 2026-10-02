@@ -48,30 +48,49 @@ def wait_for_message():
             
             messages = data.get('messages', [])
             if messages:
-                print("\n" + "="*60)
-                print(f"🚨 [NUEVA SOLICITUD DE WHATSAPP PARA ANTIGRAVITY]")
-                print("="*60)
+                ADMIN_IDENTIFIERS = ['5493885104530', '543885104530', '3885104530', '93445687386215']
                 
-                ids = []
+                admin_msgs = []
+                lead_msgs = []
+                all_ids = []
+
                 for m in messages:
-                    sender = m.get('senderName', 'Darío Orquera')
-                    phone = m.get('phone', '5493885104530')
-                    text = m.get('messageText', '')
-                    ids.append(m['id'])
-                    
-                    print(f"👤 De: {sender} ({phone})")
-                    print(f"📝 Prompt para Antigravity:")
-                    print(f">>> {text} <<<")
-                
-                # Marcar como procesados para que no se dupliquen
-                ack_data = json.dumps({'ids': ids}).encode('utf-8')
-                ack_req = urllib.request.Request(f"{BASE_URL}/api/inbox/ack", data=ack_data, headers=headers)
-                urllib.request.urlopen(ack_req, context=ctx)
-                print("="*60 + "\n")
-                sys.stdout.flush()
-                
-                # TERMINA EL PROCESO para activar el Reactive Wakeup de Antigravity
-                sys.exit(0)
+                    phone = str(m.get('phone', ''))
+                    remote_jid = str(m.get('remoteJid', ''))
+                    all_ids.append(m['id'])
+
+                    is_admin = any(id_str in phone or id_str in remote_jid for id_str in ADMIN_IDENTIFIERS)
+                    if is_admin:
+                        admin_msgs.append(m)
+                    else:
+                        lead_msgs.append(m)
+
+                # Siempre marcar como procesados en el servidor
+                if all_ids:
+                    ack_data = json.dumps({'ids': all_ids}).encode('utf-8')
+                    ack_req = urllib.request.Request(f"{BASE_URL}/api/inbox/ack", data=ack_data, headers=headers)
+                    urllib.request.urlopen(ack_req, context=ctx)
+
+                if lead_msgs:
+                    for lm in lead_msgs:
+                        print(f"[Waiter] 💼 Respuesta de lead/prospecto registrada: {lm.get('senderName')} ({lm.get('phone')}): {lm.get('messageText', '')[:60]}...")
+                    sys.stdout.flush()
+
+                if admin_msgs:
+                    print("\n" + "="*60)
+                    print(f"🚨 [NUEVA SOLICITUD DE DARIO PARA ANTIGRAVITY]")
+                    print("="*60)
+                    for am in admin_msgs:
+                        sender = am.get('senderName', 'Darío Orquera')
+                        phone = am.get('phone', '5493885104530')
+                        text = am.get('messageText', '')
+                        print(f"👤 De: {sender} ({phone})")
+                        print(f"📝 Prompt para Antigravity:")
+                        print(f">>> {text} <<<")
+                    print("="*60 + "\n")
+                    sys.stdout.flush()
+                    # TERMINA EL PROCESO para despertar a Antigravity
+                    sys.exit(0)
 
         except urllib.error.HTTPError as he:
             if he.code == 401:
