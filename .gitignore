@@ -3,3 +3,7 @@ auth_info_baileys/
 .env
 .DS_Store
 *.log
+__pycache__/
+*.pyc
+test_maps.json
+
