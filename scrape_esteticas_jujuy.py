@@ -63,16 +63,16 @@ def generate_custom_message(name, business_name, has_real_web, website_url, demo
     if has_real_web and website_url:
         msg = (
             f"{saludo} "
-            f"Estuvimos viendo el perfil de {business_name} y notamos que se beneficiaría mucho de una web mobile-first de alto impacto, "
-            f"con cotizador interactivo de depilación láser en 3 pasos, catálogo de tratamientos y turnero directo a WhatsApp para que tus clientas reserven al instante. "
-            f"Te comparto una demo en vivo de cómo diseñamos para estética: {demo_url} - "
-            f"Si te parece interesante evaluar una propuesta o rediseño sin compromiso para {business_name}, con gusto te armamos una maqueta. ¡Saludos cordiales!"
+            f"Estuvimos viendo el sitio web de {business_name} y te escribo porque nos especializamos en actualizar, rediseñar y modernizar páginas web existentes, "
+            f"optimizándolas al 100% para teléfonos móviles (diseño visual de alta gama y carga ultra rápida) e integrando cotizadores de packs y turneros directos a WhatsApp para que tus clientas reserven al instante desde el celular. "
+            f"Te comparto una demo en vivo de cómo rediseñamos sitios para estética: {demo_url} - "
+            f"Si te parece interesante evaluar una actualización o rediseño sin compromiso para {business_name}, con gusto te armamos una propuesta preliminar. {cierre}"
         )
     else:
         msg = (
             f"{saludo} "
-            f"Nos especializamos en el desarrollo de páginas web modernas para centros de estética, medicina estética y spas. "
-            f"Diseñamos sitios ágiles para celulares con cotizador interactivo de depilación láser, catálogo de tratamientos y botón directo para solicitar turnos por WhatsApp. "
+            f"Nos especializamos en el desarrollo de páginas web modernas para centros de estética, cosmetología y spas, "
+            f"optimizadas al 100% para teléfonos móviles con cotizador interactivo de depilación láser en 3 pasos, catálogo de tratamientos y botón directo para solicitar turnos por WhatsApp. "
             f"Te comparto una demo en vivo de muestra: {demo_url} - "
             f"Si te gustaría ver una propuesta pensada para {business_name} sin costo ni compromiso, quedo a tu disposición. {cierre}"
         )

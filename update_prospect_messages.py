@@ -1,8 +1,10 @@
 """
-Actualiza los mensajes personalizados de todos los prospectos en prospects.json y PostgreSQL
-utilizando saludos atemporales (aptos para mañana, tarde o noche) y enlaces de auradev.online:
-- Odontología: https://auradev.online/demo/odontologia/
-- Estética & Spa: https://auradev.online/demo/estetica/
+Actualiza los mensajes personalizados de todos los prospectos en prospects.json y PostgreSQL.
+Incluye:
+- Para quienes YA tienen web: mención explícita a actualización/rediseño y optimización al 100% para teléfonos móviles.
+- Para quienes NO tienen web: desarrollo de sitio web moderno mobile-first con embudo a WhatsApp.
+- Saludos atemporales (válidos para cualquier hora del día).
+- Enlaces oficiales de auradev.online (/demo/odontologia/ y /demo/estetica/).
 """
 
 import sys
@@ -28,16 +30,16 @@ def generate_odonto_msg(name, business_name, has_real_web, website_url):
     if has_real_web and website_url:
         return (
             f'{saludo} '
-            f'Estuve viendo la presencia web de {business_name} y noté que se beneficiaría mucho de una actualización mobile-first '
-            f'y un turnero interactivo directo a WhatsApp para que los pacientes agenden al instante. '
+            f'Estuve viendo el sitio web de {business_name} y le escribo porque nos especializamos en actualizar, rediseñar y modernizar páginas web existentes, '
+            f'optimizándolas al 100% para teléfonos móviles (carga ultra rápida y diseño responsive) e integrando turneros interactivos directos a WhatsApp para que los pacientes agenden al instante. '
             f'Le comparto una demo en vivo de cómo modernizamos sitios para odontología: {demo_url} - '
-            f'Si le parece interesante evaluar un rediseño sin compromiso, con gusto le armamos una propuesta preliminar. ¡Saludos cordiales!'
+            f'Si le parece interesante evaluar una actualización o rediseño sin compromiso para {business_name}, con gusto le armamos una propuesta preliminar. {cierre}'
         )
     else:
         return (
             f'{saludo} '
-            f'Nos especializamos en el desarrollo de páginas web modernas para profesionales y clínicas odontológicas. '
-            f'Diseñamos plataformas ágiles para celulares con selector de tratamientos, cotizador de cuotas y botón directo para solicitar turnos por WhatsApp. '
+            f'Nos especializamos en el desarrollo de páginas web modernas para profesionales y clínicas odontológicas, '
+            f'optimizadas al 100% para teléfonos móviles con selector de tratamientos, cotizador de cuotas y botón directo para solicitar turnos por WhatsApp. '
             f'Le comparto una demo en vivo de muestra: {demo_url} - '
             f'Si le gustaría ver una maqueta pensada para {business_name} sin costo ni compromiso, quedo a su disposición. {cierre}'
         )
@@ -51,16 +53,16 @@ def generate_estetica_msg(name, business_name, has_real_web, website_url):
     if has_real_web and website_url:
         return (
             f'{saludo} '
-            f'Estuvimos viendo el perfil de {business_name} y notamos que se beneficiaría mucho de una web mobile-first de alto impacto, '
-            f'con cotizador interactivo de depilación láser en 3 pasos, catálogo de tratamientos y turnero directo a WhatsApp para que tus clientas reserven al instante. '
-            f'Te comparto una demo en vivo de cómo diseñamos para estética: {demo_url} - '
-            f'Si te parece interesante evaluar una propuesta o rediseño sin compromiso para {business_name}, con gusto te armamos una maqueta. ¡Saludos cordiales!'
+            f'Estuvimos viendo el sitio web de {business_name} y te escribo porque nos especializamos en actualizar, rediseñar y modernizar páginas web existentes, '
+            f'optimizándolas al 100% para teléfonos móviles (diseño visual de alta gama y carga ultra rápida) e integrando cotizadores de packs y turneros directos a WhatsApp para que tus clientas reserven al instante desde el celular. '
+            f'Te comparto una demo en vivo de cómo rediseñamos sitios para estética: {demo_url} - '
+            f'Si te parece interesante evaluar una actualización o rediseño sin compromiso para {business_name}, con gusto te armamos una propuesta preliminar. {cierre}'
         )
     else:
         return (
             f'{saludo} '
-            f'Nos especializamos en el desarrollo de páginas web modernas para centros de estética, medicina estética y spas. '
-            f'Diseñamos sitios ágiles para celulares con cotizador interactivo de depilación láser, catálogo de tratamientos y botón directo para solicitar turnos por WhatsApp. '
+            f'Nos especializamos en el desarrollo de páginas web modernas para centros de estética, cosmetología y spas, '
+            f'optimizadas al 100% para teléfonos móviles con cotizador interactivo de depilación láser en 3 pasos, catálogo de tratamientos y botón directo para solicitar turnos por WhatsApp. '
             f'Te comparto una demo en vivo de muestra: {demo_url} - '
             f'Si te gustaría ver una propuesta pensada para {business_name} sin costo ni compromiso, quedo a tu disposición. {cierre}'
         )
@@ -71,6 +73,7 @@ def main():
 
     odonto_count = 0
     estetica_count = 0
+    with_web_count = 0
 
     for p in prospects:
         niche = (p.get('niche') or '').lower()
@@ -78,6 +81,9 @@ def main():
         name = p.get('name', '')
         has_web = p.get('has_website', False)
         web_url = p.get('website', '')
+        
+        if has_web and web_url:
+            with_web_count += 1
         
         if any(k in niche for k in ['est', 'spa', 'cosmet']):
             p['customMessage'] = generate_estetica_msg(name, bname, has_web, web_url)
@@ -92,8 +98,9 @@ def main():
         json.dump(prospects, f, indent=2, ensure_ascii=False)
 
     print(f"[OK] Actualizados en prospects.json:")
-    print(f"  - Odontología: {odonto_count} prospectos con saludo general atemporal")
-    print(f"  - Estética & Spa: {estetica_count} prospectos con saludo general atemporal")
+    print(f"  - Total: {len(prospects)} prospectos")
+    print(f"  - Con web existente (propuesta de actualización/optimización móvil): {with_web_count}")
+    print(f"  - Sin web (propuesta de nuevo desarrollo mobile-first): {len(prospects) - with_web_count}")
 
     # Sincronizar con API y PostgreSQL
     try:

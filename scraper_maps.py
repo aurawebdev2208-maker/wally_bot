@@ -77,16 +77,16 @@ def generate_custom_message(name, business_name, has_real_web, website_url, demo
     if has_real_web and website_url:
         msg = (
             f"{saludo} "
-            f"Estuve viendo la presencia web de {business_name} y noté que se beneficiaría mucho de una actualización mobile-first "
-            f"y un turnero interactivo directo a WhatsApp para que los pacientes agenden al instante. "
+            f"Estuve viendo el sitio web de {business_name} y le escribo porque nos especializamos en actualizar, rediseñar y modernizar páginas web existentes, "
+            f"optimizándolas al 100% para teléfonos móviles (carga ultra rápida y diseño responsive) e integrando turneros interactivos directos a WhatsApp para que los pacientes agenden al instante. "
             f"Le comparto una demo en vivo de cómo modernizamos sitios para odontología: {demo_url} - "
-            f"Si le parece interesante evaluar un rediseño sin compromiso, con gusto le armamos una propuesta preliminar. ¡Saludos cordiales!"
+            f"Si le parece interesante evaluar una actualización o rediseño sin compromiso para {business_name}, con gusto le armamos una propuesta preliminar. {cierre}"
         )
     else:
         msg = (
             f"{saludo} "
-            f"Nos especializamos en el desarrollo de páginas web modernas para profesionales y clínicas odontológicas. "
-            f"Diseñamos plataformas ágiles para celulares con selector de tratamientos, cotizador de cuotas y botón directo para solicitar turnos por WhatsApp. "
+            f"Nos especializamos en el desarrollo de páginas web modernas para profesionales y clínicas odontológicas, "
+            f"optimizadas al 100% para teléfonos móviles con selector de tratamientos, cotizador de cuotas y botón directo para solicitar turnos por WhatsApp. "
             f"Le comparto una demo en vivo de muestra: {demo_url} - "
             f"Si le gustaría ver una maqueta pensada para {business_name} sin costo ni compromiso, quedo a su disposición. {cierre}"
         )
