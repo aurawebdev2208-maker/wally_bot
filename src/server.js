@@ -290,4 +290,10 @@ app.listen(PORT, async () => {
   console.log(`👉 http://localhost:${PORT}`);
   console.log(`====================================================`);
   await whatsapp.init();
+  try {
+    const { getLocalWhisperPipeline } = require('./transcriber');
+    getLocalWhisperPipeline().catch(err => {
+      console.error('[Server] ⚠️ Aviso: Whisper Local no pudo precargarse:', err.message);
+    });
+  } catch (e) {}
 });

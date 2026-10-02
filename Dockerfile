@@ -1,11 +1,15 @@
-# Base image Node.js LTS
-FROM node:20-alpine
+# Base image Node.js LTS (Debian Slim para compatibilidad total con binarios nativos, FFmpeg y ONNX Runtime)
+FROM node:20-slim
 
 # Set working directory
 WORKDIR /app
 
-# Install build dependencies if needed
-RUN apk add --no-cache tzdata
+# Install system dependencies (ffmpeg, curl, tzdata)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ffmpeg \
+    curl \
+    tzdata \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set timezone
 ENV TZ=America/Argentina/Jujuy
@@ -20,7 +24,7 @@ RUN npm ci --only=production
 COPY . .
 
 # Create persistent folders
-RUN mkdir -p /app/auth_info_baileys
+RUN mkdir -p /app/auth_info_baileys /app/.cache_models
 
 # Expose port
 EXPOSE 3000
@@ -31,7 +35,7 @@ ENV NODE_ENV=production
 
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
+  CMD curl -f http://localhost:3000/health || exit 1
 
 # Start command
 CMD ["node", "src/server.js"]

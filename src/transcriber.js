@@ -4,12 +4,15 @@ const path = require('path');
 const fs = require('fs');
 
 let transcriberPipeline = null;
-let ffmpegPath = null;
 
-try {
-  ffmpegPath = require('ffmpeg-static');
-} catch (e) {
-  ffmpegPath = 'ffmpeg';
+function getFfmpegBinary() {
+  try {
+    const staticPath = require('ffmpeg-static');
+    if (staticPath && fs.existsSync(staticPath)) {
+      return staticPath;
+    }
+  } catch (e) {}
+  return 'ffmpeg';
 }
 
 /**
@@ -17,7 +20,10 @@ try {
  */
 function convertAudioToWav16k(audioBuffer) {
   return new Promise((resolve, reject) => {
-    const ffmpeg = spawn(ffmpegPath, [
+    const binary = getFfmpegBinary();
+    console.log(`[Transcriber] Usando binario ffmpeg: "${binary}"`);
+
+    const ffmpeg = spawn(binary, [
       '-i', 'pipe:0',
       '-ar', '16000',
       '-ac', '1',
@@ -26,21 +32,27 @@ function convertAudioToWav16k(audioBuffer) {
     ]);
 
     const chunks = [];
+    let stderr = '';
+
     ffmpeg.stdout.on('data', (chunk) => chunks.push(chunk));
-    ffmpeg.stderr.on('data', () => {}); // Silenciar logs de ffmpeg
+    ffmpeg.stderr.on('data', (data) => stderr += data.toString());
 
     ffmpeg.on('close', (code) => {
-      if (code === 0) {
+      if (code === 0 && chunks.length > 0) {
         resolve(Buffer.concat(chunks));
       } else {
-        reject(new Error(`ffmpeg salió con código ${code}`));
+        reject(new Error(`ffmpeg falló con código ${code}: ${stderr.slice(-300)}`));
       }
     });
 
-    ffmpeg.on('error', (err) => reject(err));
+    ffmpeg.on('error', (err) => reject(new Error(`Error iniciando ffmpeg (${binary}): ${err.message}`)));
 
-    ffmpeg.stdin.write(audioBuffer);
-    ffmpeg.stdin.end();
+    try {
+      ffmpeg.stdin.write(audioBuffer);
+      ffmpeg.stdin.end();
+    } catch (writeErr) {
+      reject(writeErr);
+    }
   });
 }
 
@@ -94,7 +106,7 @@ async function transcribeWithLocalWhisper(audioBuffer) {
       return cleanText;
     }
   } catch (err) {
-    console.error('[Transcriber] Error en transcripción Whisper Local:', err.message);
+    console.error('[Transcriber] Error en transcripción Whisper Local:', err);
   }
   return null;
 }
@@ -110,9 +122,8 @@ async function transcribeAudio(audioBuffer, mimeType = 'audio/ogg; codecs=opus')
 
   const geminiKey = process.env.GEMINI_API_KEY;
   const groqKey = process.env.GROQ_API_KEY;
-  const openaiKey = process.env.OPENAI_API_KEY;
 
-  // 1. Si hay clave de Gemini API, usarla (ultrarrápida y multimodal)
+  // 1. Si hay clave de Google Gemini API
   if (geminiKey) {
     try {
       const cleanMime = mimeType.split(';')[0].trim() || 'audio/ogg';
@@ -195,7 +206,7 @@ async function transcribeAudio(audioBuffer, mimeType = 'audio/ogg; codecs=opus')
     }
   }
 
-  // 3. WHISPER LOCAL (Por defecto: 100% autónomo, 0 API Key, corre en tu servidor)
+  // 3. WHISPER LOCAL (Por defecto: 100% offline, 0 API Key, corre en tu servidor)
   console.log('[Transcriber] 🚀 Ejecutando Whisper Local en el servidor (sin API Key)...');
   const localResult = await transcribeWithLocalWhisper(audioBuffer);
   if (localResult) {
