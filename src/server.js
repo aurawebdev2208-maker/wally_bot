@@ -100,6 +100,15 @@ app.post('/api/auth/login', (req, res) => {
   });
 });
 
+// Public Healthcheck Endpoints for Coolify / Docker (No auth required)
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', uptime: process.uptime(), timestamp: new Date().toISOString() });
+});
+
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok', uptime: process.uptime(), timestamp: new Date().toISOString() });
+});
+
 // Protect all other /api routes
 app.use('/api', authMiddleware);
 
