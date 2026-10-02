@@ -106,12 +106,26 @@ class WhatsAppBridge:
 
 if __name__ == "__main__":
     bridge = WhatsAppBridge()
-    if len(sys.argv) > 1 and sys.argv[1] == "--send":
-        # Enviar mensaje rápido
-        reply_msg = sys.argv[2] if len(sys.argv) > 2 else "Mensaje de prueba"
-        target_phone = sys.argv[3] if len(sys.argv) > 3 else ADMIN_PHONE
-        ok = bridge.send_reply(reply_msg, target_phone)
-        print(f"Envío {'exitoso' if ok else 'fallido'}")
-    else:
-        # Chequear mensajes pendientes
+    if len(sys.argv) == 1:
         bridge.check_once()
+    else:
+        args = sys.argv[1:]
+        if args[0] == "--send":
+            args = args[1:]
+        
+        if len(args) == 1:
+            reply_msg = args[0]
+            target_phone = ADMIN_PHONE
+        elif len(args) >= 2:
+            if args[0].replace('+', '').isdigit() and len(args[0]) >= 8:
+                target_phone = args[0]
+                reply_msg = args[1]
+            else:
+                reply_msg = args[0]
+                target_phone = args[1]
+        else:
+            reply_msg = "Mensaje de prueba"
+            target_phone = ADMIN_PHONE
+
+        ok = bridge.send_reply(reply_msg, target_phone)
+        print(f"Envío {'exitoso' if ok else 'fallido'} a {target_phone}")
