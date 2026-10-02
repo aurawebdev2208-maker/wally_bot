@@ -435,9 +435,9 @@
               <thead class="bg-slate-950 text-slate-400 uppercase font-mono text-[10px] sticky top-0 border-b border-slate-800 z-10">
                 <tr>
                   <th class="p-3">Negocio / Contacto</th>
-                  <th class="p-3">Teléfono</th>
-                  <th class="p-3">Estado</th>
-                  <th class="p-3 text-right">Acción</th>
+                  <th class="p-3 whitespace-nowrap">Teléfono</th>
+                  <th class="p-3 whitespace-nowrap">Estado</th>
+                  <th class="p-3 text-right whitespace-nowrap">Acción</th>
                 </tr>
               </thead>
               <tbody id="prospectsTableBody" class="divide-y divide-slate-800/60 font-sans">
@@ -1233,15 +1233,20 @@
         return;
       }
 
+      // Helper to generate consistent, aligned status badges
+      const getStatusBadge = (status, errorMsg) => {
+        if (status === 'SENT') {
+          return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 whitespace-nowrap leading-tight"><span class="material-symbols-outlined text-[13px]">check_circle</span><span>Enviado</span></span>`;
+        }
+        if (status === 'FAILED') {
+          return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20 whitespace-nowrap leading-tight" title="${errorMsg || 'Error'}"><span class="material-symbols-outlined text-[13px]">cancel</span><span>Falló</span></span>`;
+        }
+        return `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 whitespace-nowrap leading-tight"><span class="material-symbols-outlined text-[13px]">schedule</span><span>Pendiente</span></span>`;
+      };
+
       // 1. Render Desktop Table Rows
       tbody.innerHTML = displayList.map((p, idx) => {
-        let statusBadge = `<span class="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full text-[10px] font-semibold">⏳ Pendiente</span>`;
-        if (p.status === 'SENT') {
-          statusBadge = `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full text-[10px] font-semibold">✅ Enviado</span>`;
-        } else if (p.status === 'FAILED') {
-          statusBadge = `<span class="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2 py-0.5 rounded-full text-[10px] font-semibold" title="${p.error || 'Error'}">❌ Falló</span>`;
-        }
-
+        const statusBadge = getStatusBadge(p.status, p.error);
         const groupBadge = `<span class="px-2 py-0.5 rounded-md bg-slate-800 text-[10px] font-medium text-slate-300 border border-slate-700/60">${p.niche || p.group || 'General'}</span>`;
 
         return `
@@ -1253,9 +1258,9 @@
               </div>
               <div class="text-[11px] text-slate-400">${p.name ? p.name + ' • ' : ''}${p.location || 'Salta'}</div>
             </td>
-            <td class="p-3 font-mono text-slate-300">${p.phone}</td>
-            <td class="p-3">${statusBadge}</td>
-            <td class="p-3 text-right">
+            <td class="p-3 font-mono text-slate-300 whitespace-nowrap">${p.phone}</td>
+            <td class="p-3 whitespace-nowrap">${statusBadge}</td>
+            <td class="p-3 text-right whitespace-nowrap">
               <div class="flex items-center justify-end gap-1">
                 <button onclick="editProspect('${p.id || idx}')" title="Editar mensaje y grupo" class="p-1.5 rounded-lg hover:bg-slate-700 text-slate-400 hover:text-white transition">
                   <span class="material-symbols-outlined text-[16px]">edit</span>
@@ -1271,12 +1276,7 @@
 
       // 2. Render Mobile Cards View
       mobileContainer.innerHTML = displayList.map((p, idx) => {
-        let statusBadge = `<span class="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full text-[10px] font-semibold">⏳ Pendiente</span>`;
-        if (p.status === 'SENT') {
-          statusBadge = `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full text-[10px] font-semibold">✅ Enviado</span>`;
-        } else if (p.status === 'FAILED') {
-          statusBadge = `<span class="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2 py-0.5 rounded-full text-[10px] font-semibold">❌ Falló</span>`;
-        }
+        const statusBadge = getStatusBadge(p.status, p.error);
 
         return `
           <div class="bg-slate-950/70 border border-slate-800/80 rounded-xl p-3 space-y-2 text-xs">
