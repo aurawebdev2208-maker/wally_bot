@@ -695,9 +695,11 @@
       promptContainer.classList.add('hidden');
       btnCancel.classList.remove('hidden');
       btnCancel.textContent = cancelText;
+      btnCancel.disabled = false;
 
+      btnConfirm.disabled = false;
       btnConfirm.className = `px-5 py-2.5 rounded-xl font-bold text-xs transition shadow-lg text-center active:scale-95 flex items-center justify-center gap-1.5 ${confirmClass}`;
-      btnConfirmText.textContent = confirmText;
+      btnConfirm.innerHTML = `<span id="dialogBtnConfirmText">${confirmText}</span>`;
 
       modal.classList.remove('hidden', 'pointer-events-none');
       requestAnimationFrame(() => {
@@ -714,9 +716,29 @@
       }
 
       btnCancel.onclick = close;
-      btnConfirm.onclick = () => {
-        close();
-        if (onConfirm) onConfirm();
+      btnConfirm.onclick = async () => {
+        try {
+          btnConfirm.disabled = true;
+          btnCancel.disabled = true;
+          btnConfirm.classList.add('opacity-80', 'cursor-not-allowed');
+          btnConfirm.innerHTML = `<span class="material-symbols-outlined text-[16px] animate-spin">sync</span><span>Procesando...</span>`;
+
+          if (onConfirm) {
+            await onConfirm({
+              setLoadingText: (txt) => {
+                btnConfirm.innerHTML = `<span class="material-symbols-outlined text-[16px] animate-spin">sync</span><span>${txt}</span>`;
+              }
+            });
+          }
+          close();
+        } catch (err) {
+          console.error('Error in confirm action:', err);
+        } finally {
+          btnConfirm.disabled = false;
+          btnCancel.disabled = false;
+          btnConfirm.classList.remove('opacity-80', 'cursor-not-allowed');
+          btnConfirm.innerHTML = `<span id="dialogBtnConfirmText">${confirmText}</span>`;
+        }
       };
     }
 
@@ -744,13 +766,16 @@
       promptLabel.textContent = label;
       promptInput.value = defaultValue;
       promptInput.placeholder = placeholder;
+      promptInput.disabled = false;
       promptHint.textContent = hint;
 
       btnCancel.classList.remove('hidden');
       btnCancel.textContent = 'Cancelar';
+      btnCancel.disabled = false;
 
+      btnConfirm.disabled = false;
       btnConfirm.className = 'px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs transition shadow-lg shadow-cyan-600/20 text-center active:scale-95 flex items-center justify-center gap-1.5';
-      btnConfirmText.textContent = confirmText;
+      btnConfirm.innerHTML = `<span id="dialogBtnConfirmText">${confirmText}</span>`;
 
       modal.classList.remove('hidden', 'pointer-events-none');
       requestAnimationFrame(() => {
@@ -769,11 +794,37 @@
       }
 
       btnCancel.onclick = close;
-      btnConfirm.onclick = () => {
+      btnConfirm.onclick = async () => {
         const val = promptInput.value.trim();
-        if (!val) return;
-        close();
-        if (onConfirm) onConfirm(val);
+        if (!val) {
+          promptInput.focus();
+          return;
+        }
+
+        try {
+          btnConfirm.disabled = true;
+          btnCancel.disabled = true;
+          promptInput.disabled = true;
+          btnConfirm.classList.add('opacity-80', 'cursor-not-allowed');
+          btnConfirm.innerHTML = `<span class="material-symbols-outlined text-[16px] animate-spin">sync</span><span>Enviando...</span>`;
+
+          if (onConfirm) {
+            await onConfirm(val, {
+              setLoadingText: (txt) => {
+                btnConfirm.innerHTML = `<span class="material-symbols-outlined text-[16px] animate-spin">sync</span><span>${txt}</span>`;
+              }
+            });
+          }
+          close();
+        } catch (err) {
+          console.error('Error in prompt action:', err);
+        } finally {
+          btnConfirm.disabled = false;
+          btnCancel.disabled = false;
+          promptInput.disabled = false;
+          btnConfirm.classList.remove('opacity-80', 'cursor-not-allowed');
+          btnConfirm.innerHTML = `<span id="dialogBtnConfirmText">${confirmText}</span>`;
+        }
       };
 
       promptInput.onkeydown = (ev) => {
@@ -1340,10 +1391,13 @@
         hint: 'Se enviará el pitch exacto configurado para este nicho con sus links y demos.',
         icon: 'send_to_mobile',
         confirmText: 'Enviar Prueba',
-        onConfirm: async (testPhone) => {
+        onConfirm: async (testPhone, helpers) => {
           localStorage.setItem('wally_test_phone', testPhone.trim());
+          if (helpers && helpers.setLoadingText) {
+            helpers.setLoadingText('Enviando a WhatsApp...');
+          }
+          showToast({ title: 'Enviando prueba...', message: `Conectando con WhatsApp (${testPhone})...`, type: 'info' });
           try {
-            showToast({ title: 'Enviando prueba...', message: `Conectando con ${testPhone}...`, type: 'info' });
             const res = await authFetch('/api/send', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -1362,9 +1416,11 @@
                 message: json.error || 'Verificá que WhatsApp esté conectado.', 
                 type: 'error' 
               });
+              throw new Error(json.error || 'Error al enviar');
             }
           } catch (err) {
             showToast({ title: 'Error', message: err.message, type: 'error' });
+            throw err;
           }
         }
       });
