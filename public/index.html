@@ -566,6 +566,42 @@
     </div>
   </div>
 
+  <!-- TOAST NOTIFICATION CONTAINER (Floating top-right) -->
+  <div id="toastContainer" class="fixed top-4 right-4 z-[9999] flex flex-col gap-2.5 max-w-sm w-full pointer-events-none p-2 sm:p-0"></div>
+
+  <!-- UNIVERSAL MODERN DIALOG MODAL (Replaces native alert, confirm, prompt) -->
+  <div id="customDialogModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[9990] hidden flex items-center justify-center p-4 transition-all duration-300 opacity-0 pointer-events-none">
+    <div id="customDialogBox" class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl shadow-black/80 space-y-4 transform scale-95 transition-all duration-300">
+      
+      <div class="flex items-start gap-3.5">
+        <div id="dialogIconBox" class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0 shadow-inner">
+          <span id="dialogIcon" class="material-symbols-outlined text-2xl">help</span>
+        </div>
+        <div class="min-w-0 flex-1">
+          <h3 id="dialogTitle" class="text-base font-bold text-white leading-snug">Título del Diálogo</h3>
+          <div id="dialogMessage" class="text-xs text-slate-300 mt-1 leading-relaxed">Mensaje descriptivo del diálogo.</div>
+        </div>
+      </div>
+
+      <!-- Prompt Input Container (Hidden in Confirm / Alert mode) -->
+      <div id="dialogPromptContainer" class="hidden space-y-1.5 pt-1">
+        <label id="dialogPromptLabel" class="block text-xs font-semibold text-slate-300">Dato requerido:</label>
+        <input type="text" id="dialogPromptInput" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white font-mono focus:outline-none focus:border-emerald-500 transition shadow-inner">
+        <span id="dialogPromptHint" class="text-[11px] text-slate-500 block"></span>
+      </div>
+
+      <div class="pt-2 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 border-t border-slate-800/80">
+        <button id="dialogBtnCancel" type="button" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition text-center active:scale-95">
+          Cancelar
+        </button>
+        <button id="dialogBtnConfirm" type="button" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold text-xs transition shadow-lg shadow-emerald-600/20 text-center active:scale-95 flex items-center justify-center gap-1.5">
+          <span id="dialogBtnConfirmText">Confirmar</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- JAVASCRIPT LOGIC -->
   <script>
     let currentTab = 'tab-connection';
@@ -575,6 +611,181 @@
 
     let authToken = localStorage.getItem('wally_auth_token') || null;
     let currentUsername = localStorage.getItem('wally_auth_user') || 'dorquera';
+
+    // === MODERN TOAST NOTIFICATION SYSTEM ===
+    function showToast(typeOrObj, titleArg, messageArg) {
+      let type = 'info', title = '', message = '';
+      if (typeof typeOrObj === 'object' && typeOrObj !== null) {
+        type = typeOrObj.type || 'info';
+        title = typeOrObj.title || '';
+        message = typeOrObj.message || '';
+      } else {
+        type = typeOrObj || 'info';
+        title = titleArg || '';
+        message = messageArg || '';
+      }
+
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      toast.className = 'pointer-events-auto bg-slate-900/95 backdrop-blur-md border rounded-2xl p-3.5 sm:p-4 shadow-2xl shadow-black/80 flex items-start gap-3 transform translate-y-2 opacity-0 transition-all duration-300';
+      
+      let borderColor = 'border-slate-800';
+      let iconColor = 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
+      let iconName = 'check_circle';
+
+      if (type === 'error') {
+        borderColor = 'border-rose-500/40 bg-slate-950/95';
+        iconColor = 'text-rose-400 bg-rose-500/10 border-rose-500/20';
+        iconName = 'error';
+      } else if (type === 'warning') {
+        borderColor = 'border-amber-500/40 bg-slate-950/95';
+        iconColor = 'text-amber-400 bg-amber-500/10 border-amber-500/20';
+        iconName = 'warning';
+      } else if (type === 'info') {
+        borderColor = 'border-cyan-500/40 bg-slate-950/95';
+        iconColor = 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20';
+        iconName = 'info';
+      }
+
+      toast.classList.add(borderColor);
+      toast.innerHTML = `
+        <div class="w-8 h-8 rounded-xl border flex items-center justify-center flex-shrink-0 ${iconColor}">
+          <span class="material-symbols-outlined text-lg">${iconName}</span>
+        </div>
+        <div class="min-w-0 flex-1">
+          <h4 class="text-xs font-bold text-white">${title}</h4>
+          <p class="text-[11px] text-slate-300 mt-0.5 leading-snug">${message}</p>
+        </div>
+        <button onclick="this.parentElement.remove()" class="text-slate-500 hover:text-slate-300 p-1 flex-shrink-0">
+          <span class="material-symbols-outlined text-base">close</span>
+        </button>
+      `;
+
+      container.appendChild(toast);
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-x-4');
+        setTimeout(() => toast.remove(), 300);
+      }, 4500);
+    }
+
+    // === MODERN UNIVERSAL CONFIRM & PROMPT MODALS ===
+    function showModernConfirm({ title, message, icon = 'help', confirmText = 'Confirmar', cancelText = 'Cancelar', confirmClass = 'bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold', iconClass = 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20', onConfirm }) {
+      const modal = document.getElementById('customDialogModal');
+      const box = document.getElementById('customDialogBox');
+      const titleEl = document.getElementById('dialogTitle');
+      const msgEl = document.getElementById('dialogMessage');
+      const iconEl = document.getElementById('dialogIcon');
+      const iconBox = document.getElementById('dialogIconBox');
+      const promptContainer = document.getElementById('dialogPromptContainer');
+      const btnCancel = document.getElementById('dialogBtnCancel');
+      const btnConfirm = document.getElementById('dialogBtnConfirm');
+      const btnConfirmText = document.getElementById('dialogBtnConfirmText');
+
+      titleEl.textContent = title;
+      msgEl.innerHTML = message;
+      iconEl.textContent = icon;
+      iconBox.className = `w-10 h-10 rounded-xl border flex items-center justify-center flex-shrink-0 ${iconClass}`;
+      
+      promptContainer.classList.add('hidden');
+      btnCancel.classList.remove('hidden');
+      btnCancel.textContent = cancelText;
+
+      btnConfirm.className = `px-5 py-2.5 rounded-xl font-bold text-xs transition shadow-lg text-center active:scale-95 flex items-center justify-center gap-1.5 ${confirmClass}`;
+      btnConfirmText.textContent = confirmText;
+
+      modal.classList.remove('hidden', 'pointer-events-none');
+      requestAnimationFrame(() => {
+        modal.classList.remove('opacity-0');
+        box.classList.remove('scale-95');
+      });
+
+      function close() {
+        modal.classList.add('opacity-0');
+        box.classList.add('scale-95');
+        setTimeout(() => {
+          modal.classList.add('hidden', 'pointer-events-none');
+        }, 250);
+      }
+
+      btnCancel.onclick = close;
+      btnConfirm.onclick = () => {
+        close();
+        if (onConfirm) onConfirm();
+      };
+    }
+
+    function showModernPrompt({ title, message, label = 'Dato requerido:', defaultValue = '', placeholder = '', hint = '', icon = 'edit', confirmText = 'Aceptar', onConfirm }) {
+      const modal = document.getElementById('customDialogModal');
+      const box = document.getElementById('customDialogBox');
+      const titleEl = document.getElementById('dialogTitle');
+      const msgEl = document.getElementById('dialogMessage');
+      const iconEl = document.getElementById('dialogIcon');
+      const iconBox = document.getElementById('dialogIconBox');
+      const promptContainer = document.getElementById('dialogPromptContainer');
+      const promptLabel = document.getElementById('dialogPromptLabel');
+      const promptInput = document.getElementById('dialogPromptInput');
+      const promptHint = document.getElementById('dialogPromptHint');
+      const btnCancel = document.getElementById('dialogBtnCancel');
+      const btnConfirm = document.getElementById('dialogBtnConfirm');
+      const btnConfirmText = document.getElementById('dialogBtnConfirmText');
+
+      titleEl.textContent = title;
+      msgEl.innerHTML = message;
+      iconEl.textContent = icon;
+      iconBox.className = 'w-10 h-10 rounded-xl border flex items-center justify-center flex-shrink-0 text-cyan-400 bg-cyan-500/10 border-cyan-500/20';
+
+      promptContainer.classList.remove('hidden');
+      promptLabel.textContent = label;
+      promptInput.value = defaultValue;
+      promptInput.placeholder = placeholder;
+      promptHint.textContent = hint;
+
+      btnCancel.classList.remove('hidden');
+      btnCancel.textContent = 'Cancelar';
+
+      btnConfirm.className = 'px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs transition shadow-lg shadow-cyan-600/20 text-center active:scale-95 flex items-center justify-center gap-1.5';
+      btnConfirmText.textContent = confirmText;
+
+      modal.classList.remove('hidden', 'pointer-events-none');
+      requestAnimationFrame(() => {
+        modal.classList.remove('opacity-0');
+        box.classList.remove('scale-95');
+        promptInput.focus();
+        promptInput.select();
+      });
+
+      function close() {
+        modal.classList.add('opacity-0');
+        box.classList.add('scale-95');
+        setTimeout(() => {
+          modal.classList.add('hidden', 'pointer-events-none');
+        }, 250);
+      }
+
+      btnCancel.onclick = close;
+      btnConfirm.onclick = () => {
+        const val = promptInput.value.trim();
+        if (!val) return;
+        close();
+        if (onConfirm) onConfirm(val);
+      };
+
+      promptInput.onkeydown = (ev) => {
+        if (ev.key === 'Enter') {
+          ev.preventDefault();
+          btnConfirm.click();
+        } else if (ev.key === 'Escape') {
+          ev.preventDefault();
+          btnCancel.click();
+        }
+      };
+    }
 
     // Centralized authenticated fetch helper
     async function authFetch(url, options = {}) {
@@ -681,8 +892,15 @@
     }
 
     function handleAppLogout() {
-      if (!confirm('¿Deseas cerrar sesión en el panel de Wally Bot?')) return;
-      showLogin();
+      showModernConfirm({
+        title: 'Cerrar Sesión',
+        message: '¿Deseas cerrar la sesión activa en el panel de Wally Bot?',
+        icon: 'logout',
+        iconClass: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
+        confirmText: 'Cerrar Sesión',
+        confirmClass: 'bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold',
+        onConfirm: () => showLogin()
+      });
     }
 
     // Tabs switching
@@ -774,15 +992,25 @@
     }
 
     async function handleLogout() {
-      if (!confirm('¿Seguro que deseas cerrar la sesión de WhatsApp y desvincular el dispositivo?')) return;
-      try {
-        await authFetch('/api/logout', { method: 'POST' });
-        checkStatus();
-      } catch (err) {
-        if (!err.message.includes('401')) {
-          alert('Error al cerrar sesión: ' + err.message);
+      showModernConfirm({
+        title: 'Desvincular WhatsApp',
+        message: '¿Seguro que deseas cerrar la sesión de WhatsApp y desvincular el dispositivo de Wally Bot?',
+        icon: 'phonelink_erase',
+        iconClass: 'text-rose-400 bg-rose-500/10 border-rose-500/20',
+        confirmText: 'Desvincular',
+        confirmClass: 'bg-rose-600 hover:bg-rose-500 text-white font-bold',
+        onConfirm: async () => {
+          try {
+            await authFetch('/api/logout', { method: 'POST' });
+            showToast({ title: 'WhatsApp Desvinculado', message: 'La sesión fue cerrada correctamente.', type: 'info' });
+            checkStatus();
+          } catch (err) {
+            if (!err.message.includes('401')) {
+              showToast({ title: 'Error al desconectar', message: err.message, type: 'error' });
+            }
+          }
         }
-      }
+      });
     }
 
     let currentFilterGroup = 'ALL';
@@ -1028,17 +1256,37 @@
     }
 
     async function deleteProspect(idOrIdx) {
-      if (!confirm('¿Eliminar este prospecto de la lista?')) return;
-      prospects = prospects.filter((item, i) => item.id !== idOrIdx && String(i) !== String(idOrIdx));
-      await saveProspectsToServer();
-      renderProspectsTable();
+      showModernConfirm({
+        title: 'Eliminar Prospecto',
+        message: '¿Estás seguro de que deseas eliminar este contacto de la lista de prospección?',
+        icon: 'delete',
+        iconClass: 'text-rose-400 bg-rose-500/10 border-rose-500/20',
+        confirmText: 'Eliminar',
+        confirmClass: 'bg-rose-600 hover:bg-rose-500 text-white font-bold',
+        onConfirm: async () => {
+          prospects = prospects.filter((item, i) => item.id !== idOrIdx && String(i) !== String(idOrIdx));
+          await saveProspectsToServer();
+          renderProspectsTable();
+          showToast({ title: 'Prospecto Eliminado', message: 'El contacto fue eliminado de la lista.', type: 'info' });
+        }
+      });
     }
 
     async function resetProspectsStatus() {
-      if (!confirm('¿Reiniciar el estado de todos los prospectos a PENDIENTE para volver a enviar?')) return;
-      prospects.forEach(p => p.status = 'PENDING');
-      await saveProspectsToServer();
-      renderProspectsTable();
+      showModernConfirm({
+        title: 'Reiniciar Estados',
+        message: '¿Deseas reiniciar el estado de <strong>todos los prospectos</strong> a <span class="text-amber-400 font-bold">PENDIENTE</span> para volver a enviar la campaña?',
+        icon: 'restart_alt',
+        iconClass: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
+        confirmText: 'Reiniciar Todos',
+        confirmClass: 'bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold',
+        onConfirm: async () => {
+          prospects.forEach(p => p.status = 'PENDING');
+          await saveProspectsToServer();
+          renderProspectsTable();
+          showToast({ title: 'Estados Reiniciados', message: 'Todos los contactos quedaron en estado PENDIENTE.', type: 'success' });
+        }
+      });
     }
 
     async function saveProspectsToServer() {
@@ -1056,7 +1304,7 @@
     // Test Campaign Single Send to Personal Phone (Group-Aware)
     async function sendCampaignTest() {
       if (!prospects || prospects.length === 0) {
-        alert('No hay prospectos cargados en la lista para tomar el mensaje de prueba.');
+        showToast({ title: 'Sin Prospectos', message: 'No hay prospectos cargados en la lista para tomar el mensaje de prueba.', type: 'warning' });
         return;
       }
 
@@ -1082,26 +1330,44 @@
       const message = sampleProspect.customMessage || sampleProspect.message;
 
       const defaultPhone = localStorage.getItem('wally_test_phone') || '3885104530';
-      const testPhone = prompt(`Enviar prueba del grupo: [ ${groupLabel} ]\nNegocio de ejemplo: "${sampleProspect.business || 'Sin nombre'}"\n\nIngresá tu número de WhatsApp:`, defaultPhone);
-      if (!testPhone) return;
 
-      localStorage.setItem('wally_test_phone', testPhone.trim());
-
-      try {
-        const res = await authFetch('/api/send', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: testPhone.trim(), message })
-        });
-        const json = await res.json();
-        if (json.success) {
-          alert(`✅ ¡Mensaje de prueba del grupo "${groupLabel}" enviado con éxito a ${testPhone}!\n\nRevisá tu WhatsApp para verificar cómo lo recibirán los contactos de ${groupLabel}.`);
-        } else {
-          alert('Error al enviar mensaje de prueba: ' + (json.error || 'Verificá que WhatsApp esté conectado.'));
+      showModernPrompt({
+        title: 'Mensaje de Prueba',
+        message: `Probando grupo: <span class="text-emerald-400 font-semibold">[ ${groupLabel} ]</span><br><span class="text-xs text-slate-400">Ejemplo de negocio: "${sampleProspect.business || 'Sin nombre'}"</span>`,
+        label: 'Ingresá tu número de WhatsApp con código de área:',
+        defaultValue: defaultPhone,
+        placeholder: 'Ej: 3885104530',
+        hint: 'Se enviará el pitch exacto configurado para este nicho con sus links y demos.',
+        icon: 'send_to_mobile',
+        confirmText: 'Enviar Prueba',
+        onConfirm: async (testPhone) => {
+          localStorage.setItem('wally_test_phone', testPhone.trim());
+          try {
+            showToast({ title: 'Enviando prueba...', message: `Conectando con ${testPhone}...`, type: 'info' });
+            const res = await authFetch('/api/send', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ phone: testPhone.trim(), message })
+            });
+            const json = await res.json();
+            if (json.success) {
+              showToast({ 
+                title: '¡Prueba Enviada!', 
+                message: `Mensaje del grupo "${groupLabel}" enviado exitosamente a ${testPhone}. Revisá tu WhatsApp.`, 
+                type: 'success' 
+              });
+            } else {
+              showToast({ 
+                title: 'Error al Enviar', 
+                message: json.error || 'Verificá que WhatsApp esté conectado.', 
+                type: 'error' 
+              });
+            }
+          } catch (err) {
+            showToast({ title: 'Error', message: err.message, type: 'error' });
+          }
         }
-      } catch (err) {
-        alert('Error: ' + err.message);
-      }
+      });
     }
 
     // Campaign Execution
@@ -1119,11 +1385,13 @@
         });
         const json = await res.json();
         if (!json.success) {
-          alert(json.error || 'Error al iniciar campaña');
+          showToast({ title: 'No se pudo iniciar', message: json.error || 'Error al iniciar campaña', type: 'error' });
+        } else {
+          showToast({ title: 'Campaña Iniciada', message: `Enviando cada ${delaySeconds}s al grupo ${targetGroup}.`, type: 'success' });
         }
       } catch (err) {
         if (!err.message.includes('401')) {
-          alert('Error: ' + err.message);
+          showToast({ title: 'Error', message: err.message, type: 'error' });
         }
       }
     }
@@ -1131,20 +1399,32 @@
     async function pauseCampaign() {
       try {
         await authFetch('/api/campaign/pause', { method: 'POST' });
+        showToast({ title: 'Campaña Pausada', message: 'Se detuvo temporalmente el envío de mensajes.', type: 'warning' });
       } catch (err) {}
     }
 
     async function resumeCampaign() {
       try {
         await authFetch('/api/campaign/resume', { method: 'POST' });
+        showToast({ title: 'Campaña Reanudada', message: 'Continuando con la cola de envíos.', type: 'success' });
       } catch (err) {}
     }
 
     async function stopCampaign() {
-      if (!confirm('¿Detener la campaña de prospección?')) return;
-      try {
-        await authFetch('/api/campaign/stop', { method: 'POST' });
-      } catch (err) {}
+      showModernConfirm({
+        title: 'Detener Campaña',
+        message: '¿Seguro que deseas detener la campaña activa de prospección?',
+        icon: 'stop_circle',
+        iconClass: 'text-rose-400 bg-rose-500/10 border-rose-500/20',
+        confirmText: 'Detener Campaña',
+        confirmClass: 'bg-rose-600 hover:bg-rose-500 text-white font-bold',
+        onConfirm: async () => {
+          try {
+            await authFetch('/api/campaign/stop', { method: 'POST' });
+            showToast({ title: 'Campaña Detenida', message: 'Se detuvo el proceso y se canceló la cola activa.', type: 'info' });
+          } catch (err) {}
+        }
+      });
     }
 
     async function checkCampaignStatus() {
