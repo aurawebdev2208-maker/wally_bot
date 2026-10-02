@@ -67,28 +67,22 @@ def is_real_website(url):
 
 def generate_custom_message(name, business_name, has_real_web, website_url, demo_url="https://auradev.online/demo/odontologia/"):
     """
-    Genera el mensaje personalizado cordial, ameno y directo según si tiene web propia o no.
+    Genera el mensaje personalizado ultracorto y directo para WhatsApp.
     """
     is_doctor = "Dr." in name or "Dra." in name or "Dr." in business_name or "Dra." in business_name
     has_contact = name and name not in ['Profesional', 'Equipo', '']
-    saludo = f"¡Hola {name}! ¿Cómo está? Le escribo desde Aura Web." if (is_doctor or has_contact) else "¡Hola! ¿Cómo están? Les escribo desde Aura Web."
-    cierre = "¡Que tenga un excelente día!" if (is_doctor or has_contact) else "¡Que tengan un excelente día!"
+    saludo = f"¡Hola {name}! ¿Cómo está? Le escribo de Aura Web." if (is_doctor or has_contact) else "¡Hola! ¿Cómo están? Les escribo de Aura Web."
+    cierre = "¡Que tenga un gran día!" if (is_doctor or has_contact) else "¡Que tengan un gran día!"
     
     if has_real_web and website_url:
         msg = (
-            f"{saludo} "
-            f"Estuve viendo el sitio web de {business_name} y le escribo porque nos especializamos en actualizar, rediseñar y modernizar páginas web existentes, "
-            f"optimizándolas al 100% para teléfonos móviles (carga ultra rápida y diseño responsive) e integrando turneros interactivos directos a WhatsApp para que los pacientes agenden al instante. "
-            f"Le comparto una demo en vivo de cómo modernizamos sitios para odontología: {demo_url} - "
-            f"Si le parece interesante evaluar una actualización o rediseño sin compromiso para {business_name}, con gusto le armamos una propuesta preliminar. {cierre}"
+            f"{saludo} Vi su sitio web y nos especializamos en modernizarlo y optimizarlo 100% para celulares con turnero directo a WhatsApp.\n\n"
+            f"Le comparto una demo en vivo: {demo_url} - Si le interesa evaluar una propuesta para {business_name}, con gusto se la armamos sin compromiso. {cierre}"
         )
     else:
         msg = (
-            f"{saludo} "
-            f"Nos especializamos en el desarrollo de páginas web modernas para profesionales y clínicas odontológicas, "
-            f"optimizadas al 100% para teléfonos móviles con selector de tratamientos, cotizador de cuotas y botón directo para solicitar turnos por WhatsApp. "
-            f"Le comparto una demo en vivo de muestra: {demo_url} - "
-            f"Si le gustaría ver una maqueta pensada para {business_name} sin costo ni compromiso, quedo a su disposición. {cierre}"
+            f"{saludo} Desarrollamos páginas web para odontología, 100% optimizadas para celulares y con turnero directo a WhatsApp.\n\n"
+            f"Le comparto una demo en vivo: {demo_url} - Si le gustaría ver una maqueta sin costo para {business_name}, quedo a su disposición. {cierre}"
         )
     return msg
 
