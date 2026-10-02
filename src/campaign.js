@@ -70,19 +70,40 @@ class CampaignManager {
     }
   }
 
+  normalizeMacroNiche(nicheStr) {
+    if (!nicheStr) return 'General';
+    const n = nicheStr.toLowerCase();
+    if (n.includes('dent') || n.includes('odont') || n.includes('ortodon') || n.includes('dient') || n.includes('implante') || n.includes('dental')) {
+      return 'Odontología';
+    }
+    if (n.includes('estet') || n.includes('spa') || n.includes('facial') || n.includes('corporal') || n.includes('cosmet') || n.includes('depil') || n.includes('belleza')) {
+      return 'Estética & Spa';
+    }
+    if (n.includes('inmob') || n.includes('alquiler') || n.includes('propiedad') || n.includes('lote') || n.includes('bienes')) {
+      return 'Inmobiliaria';
+    }
+    if (n.includes('caban') || n.includes('turism') || n.includes('hotel') || n.includes('hospedaje') || n.includes('suite')) {
+      return 'Turismo & Cabañas';
+    }
+    return nicheStr.trim();
+  }
+
   async saveProspects(prospects) {
-    this.prospectsQueue = prospects;
+    this.prospectsQueue = prospects.map(p => ({
+      ...p,
+      niche: this.normalizeMacroNiche(p.niche || p.group)
+    }));
     
     // Guardar en archivo local
     try {
-      fs.writeFileSync(this.dataFile, JSON.stringify(prospects, null, 2), 'utf8');
+      fs.writeFileSync(this.dataFile, JSON.stringify(this.prospectsQueue, null, 2), 'utf8');
     } catch (err) {
       console.error('[Campaign] Error saving prospects to file:', err);
     }
 
     // Guardar en DB si está conectada
     if (db.isConnected) {
-      await db.saveAllProspects(prospects);
+      await db.saveAllProspects(this.prospectsQueue);
     }
 
     return true;
@@ -95,7 +116,7 @@ class CampaignManager {
   getGroups() {
     const groupMap = {};
     for (const p of this.prospectsQueue) {
-      const groupName = p.niche || p.group || 'General';
+      const groupName = this.normalizeMacroNiche(p.niche || p.group);
       if (!groupMap[groupName]) {
         groupMap[groupName] = {
           name: groupName,
@@ -116,9 +137,10 @@ class CampaignManager {
   async batchAssignGroup(prospectIds, newGroupName) {
     if (!Array.isArray(prospectIds) || !newGroupName) return false;
     let modified = false;
+    const cleanGroup = this.normalizeMacroNiche(newGroupName);
     for (const p of this.prospectsQueue) {
       if (prospectIds.includes(p.id)) {
-        p.niche = newGroupName;
+        p.niche = cleanGroup;
         modified = true;
       }
     }

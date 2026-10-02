@@ -3,400 +3,440 @@
     "id": "salta_dent_01",
     "business": "Clínica Dentis Salta",
     "name": "Equipo Clínica Dentis",
-    "niche": "Odontología & Urgencias 24hs",
+    "niche": "Odontología",
     "location": "Santiago del Estero 118, Salta Capital",
     "phone": "5493872237396",
     "customMessage": "Hola, ¿cómo están? Buenas tardes. Les escribo desde Aura Web. Nos dedicamos al desarrollo y modernización de sitios web para clínicas y consultorios odontológicos. Diseñamos plataformas ligeras y adaptadas a celulares, con catálogo de tratamientos y botón directo para que los pacientes soliciten turnos por WhatsApp. Les comparto una demo en vivo para que puedan ver el formato: https://demo-odontologia-seven.vercel.app/ - Si les parece de utilidad, podemos armarles una propuesta para Clínica Dentis sin ningún tipo de compromiso. ¡Saludos y que tengan buena tarde!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_02",
     "business": "Sanus Consultorios Odontológicos",
     "name": "Dr. Rafael Figueroa Langou",
-    "niche": "Odontología Integral & Ortodoncia",
+    "niche": "Odontología",
     "location": "Av. Belgrano 1205, Salta Capital",
     "phone": "5493874828272",
     "customMessage": "Hola Dr. Rafael, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Nos especializamos en crear y renovar páginas web para profesionales y centros odontológicos. Armamos sitios pensados para celulares que facilitan que nuevos pacientes conozcan los tratamientos de la clínica y soliciten turnos directamente por WhatsApp. Le comparto una demo en vivo de muestra: https://demo-odontologia-seven.vercel.app/ - Si le interesa, podemos prepararle una maqueta de muestra para Sanus Consultorios sin costo ni compromiso. ¡Saludos cordiales!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_03",
     "business": "Consultorio Odontológico Dr. Javier Vargas",
     "name": "Dr. Javier Vargas Gasco",
-    "niche": "Ortodoncia, Implantes & Estética",
+    "niche": "Odontología",
     "location": "Salta Capital",
     "phone": "5493875622110",
     "customMessage": "Hola Dr. Javier, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Trabajamos en el diseño de páginas web modernas para odontólogos, orientadas a presentar especialidades (ortodoncia, implantes, prótesis) y agilizar la coordinación de turnos por WhatsApp desde el celular. Le dejo una demo en vivo de ejemplo: https://demo-odontologia-seven.vercel.app/ - Si le resulta interesante, con gusto podemos armarle una propuesta preliminar para su consultorio sin compromiso. ¡Que tenga una excelente jornada!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_04",
     "business": "Consultorio Dra. Claudia Castro Ramos",
     "name": "Dra. Claudia Castro Ramos",
-    "niche": "Odontología & Implantes",
+    "niche": "Odontología",
     "location": "Belgrano 289, Salta Capital",
     "phone": "5493875835306",
     "customMessage": "Hola Dra. Claudia, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Nos dedicamos al diseño de sitios web para profesionales de la salud dental. Creamos páginas ágiles, adaptadas a dispositivos móviles, con turnero interactivo a WhatsApp y detalle de servicios para el paciente. Le comparto una demo en vivo para que pueda ver la estructura: https://demo-odontologia-seven.vercel.app/ - Si le gustaría ver una maqueta pensada para su consultorio, avíseme y se la preparamos sin compromiso. ¡Saludos cordiales!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_05",
     "business": "Consultorio Odontológico Dr. Cerrizuela",
     "name": "Dr. Miguel Ángel Cerrizuela",
-    "niche": "Prótesis, Implantes & Odontología",
+    "niche": "Odontología",
     "location": "Necochea 652, Salta Capital",
     "phone": "5493872135290",
     "customMessage": "Hola Dr. Miguel Ángel, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Desarrollamos páginas web para consultorios odontológicos, enfocadas en ofrecer una imagen clara y profesional, con recepción directa de consultas y turnos a WhatsApp. Le acerco una demo en vivo que tenemos activa: https://demo-odontologia-seven.vercel.app/ - Si le interesa evaluar una propuesta o rediseño para su consultorio en Salta, quedo a su disposición sin ningún compromiso. ¡Que tenga un muy buen día!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_06",
     "business": "Consultorio Integral Dra. Nadia Romero",
     "name": "Dra. Nadia Romero",
-    "niche": "Odontología Integral & Prevención",
+    "niche": "Odontología",
     "location": "San Juan 383, Salta Capital",
     "phone": "5493875376501",
     "customMessage": "Hola Dra. Nadia, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Nos dedicamos a diseñar sitios web para odontología integral, con el objetivo de facilitar la llegada de pacientes y permitirles solicitar turnos fácilmente desde el celular por WhatsApp. Le comparto un ejemplo en vivo de lo que realizamos: https://demo-odontologia-seven.vercel.app/ - Si le gustaría ver cómo quedaría una propuesta adaptada a su consultorio, con gusto se la armamos sin compromiso. ¡Saludos cordiales!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_07",
     "business": "Consultorio Odontológico Pellegrini",
     "name": "Equipo Odontología Pellegrini",
-    "niche": "Estética Dental, Implantes & Cirugía",
+    "niche": "Odontología",
     "location": "Pellegrini 79, Salta Capital",
     "phone": "5493876130421",
     "customMessage": "Hola, ¿cómo están? Buenas tardes. Les escribo desde Aura Web. Nos especializamos en la creación de páginas web para consultorios dentales. Diseñamos plataformas claras y adaptadas a celulares que muestran las especialidades del centro y cuentan con botón directo a WhatsApp para agendar turnos. Les comparto una demo en vivo de muestra: https://demo-odontologia-seven.vercel.app/ - Si les interesa, podemos prepararles una propuesta para su consultorio sin compromiso. ¡Que tengan una excelente tarde!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_08",
     "business": "Consultorio Odontológico Dr. Berretoni",
     "name": "Dr. Marcelo Berretoni",
-    "niche": "Endodoncia, Cirugía & Prótesis",
+    "niche": "Odontología",
     "location": "San Juan esq. Chacabuco, Salta Capital",
     "phone": "5493875447064",
     "customMessage": "Hola Dr. Marcelo, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Nos dedicamos al desarrollo de sitios web para profesionales odontólogos, pensados para ordenar la presentación de tratamientos y facilitar la coordinación de turnos a través de WhatsApp. Le dejo una demo en vivo para que pueda conocer el formato: https://demo-odontologia-seven.vercel.app/ - Si le resulta de interés, con gusto le preparamos una maqueta para su consultorio sin ningún compromiso. ¡Saludos cordiales!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_09",
     "business": "Consultorio Dr. Ignacio Molina Ávila",
     "name": "Dr. Ignacio Molina Ávila",
-    "niche": "Medicina Oral & Odontología",
+    "niche": "Odontología",
     "location": "Deán Funes 462, Salta Capital",
     "phone": "5493872281768",
     "customMessage": "Hola Dr. Ignacio, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Diseñamos páginas web para consultorios y especialistas odontológicos, orientadas a brindar información clara a los pacientes y simplificar la solicitud de turnos por WhatsApp desde dispositivos móviles. Le acerco una demo en vivo de referencia: https://demo-odontologia-seven.vercel.app/ - Si le gustaría evaluar una propuesta para su consultorio, quedo a su disposición sin compromiso. ¡Que tenga una excelente jornada!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_10",
     "business": "Centro Odontológico Salta",
     "name": "Rehabilitación Oral & Estética Salta",
-    "niche": "Rehabilitación Oral & Blanqueamiento",
+    "niche": "Odontología",
     "location": "Santiago del Estero 191, Salta Capital",
     "phone": "5493872207134",
     "customMessage": "Hola, ¿cómo están? Buenas tardes. Les escribo desde Aura Web. Nos dedicamos a diseñar sitios web para clínicas y centros odontológicos, con turnero interactivo directo a WhatsApp y catálogo estructurado de tratamientos para el paciente. Les comparto una demo en vivo para ver el funcionamiento: https://demo-odontologia-seven.vercel.app/ - Si les interesa ver una propuesta similar pensada para su consultorio, con gusto se las preparamos sin costo ni compromiso. ¡Saludos cordiales!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_11",
     "business": "Dra. Jimena Muratore - Odontología",
     "name": "Dra. Jimena Muratore",
-    "niche": "Estética Dental & Prótesis",
+    "niche": "Odontología",
     "location": "20 de Febrero 731, Piso 2, Consultorio 13, Salta Capital",
     "phone": "5493872202442",
     "customMessage": "Hola Dra. Jimena, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Nos dedicamos al diseño y desarrollo de sitios web para odontólogos particulares, enfocados en presentar de forma clara sus tratamientos y permitir a los pacientes solicitar turnos fácilmente por WhatsApp desde el celular. Le comparto una demo en vivo de muestra: https://demo-odontologia-seven.vercel.app/ - Si le parece de utilidad para su práctica profesional, con gusto le preparamos una propuesta sin costo ni compromiso. ¡Que tenga un muy buen día!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_12",
     "business": "Dr. Javier López Cohn - Odontología",
     "name": "Dr. Javier López Cohn",
-    "niche": "Ortodoncia & Rehabilitación Oral",
+    "niche": "Odontología",
     "location": "Gral. Güemes 265, Oficina 2, Salta Capital",
     "phone": "5493874442876",
     "customMessage": "Hola Dr. Javier, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Ayudamos a profesionales odontólogos a contar con una página web moderna, rápida y adaptada a celulares, donde los pacientes puedan conocer sus servicios y coordinar turnos directos por WhatsApp. Le comparto una demo en vivo para que pueda ver cómo funciona: https://demo-odontologia-seven.vercel.app/ - Si le gustaría ver una maqueta pensada para su actividad, con gusto se la armamos sin compromiso. ¡Saludos cordiales!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_13",
     "business": "Dra. María José Luzuriaga - Odontología",
     "name": "Dra. María José Luzuriaga",
-    "niche": "Odontología General & Prevención",
+    "niche": "Odontología",
     "location": "Gral. Güemes 833, Salta Capital",
     "phone": "5493876837887",
     "customMessage": "Hola Dra. María José, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Creamos sitios web para profesionales de la odontología, pensados para ordenar la información de consultas y facilitar que los pacientes agenden citas directamente por WhatsApp. Le dejo una demo en vivo de referencia: https://demo-odontologia-seven.vercel.app/ - Si le interesa evaluar una propuesta para su consultorio, quedo a su entera disposición sin ningún compromiso. ¡Que tenga una excelente jornada!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_14",
     "business": "Dra. Fernanda Vaca - Odontología",
     "name": "Dra. Fernanda Vaca",
-    "niche": "Odontología Integral & Estética",
+    "niche": "Odontología",
     "location": "Gral. Güemes 1294, Salta Capital",
     "phone": "5493875386265",
     "customMessage": "Hola Dra. Fernanda, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Nos especializamos en páginas web para odontólogos, orientadas a brindar una imagen profesional y agilizar la recepción de turnos por WhatsApp desde dispositivos móviles. Le comparto una demo interactiva: https://demo-odontologia-seven.vercel.app/ - Si le resulta de interés, con gusto le armamos un modelo de muestra sin ningún compromiso. ¡Saludos cordiales!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_15",
     "business": "Dra. Marina Musaime - Odontología",
     "name": "Dra. Marina Soledad Musaime",
-    "niche": "Ortodoncia & Ortopedia Maxilar",
+    "niche": "Odontología",
     "location": "25 de Mayo 629, Salta Capital",
     "phone": "5493875708128",
     "customMessage": "Hola Dra. Marina, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Diseñamos plataformas web para especialistas en odontología y ortodoncia, con catálogo de tratamientos y botón directo para solicitar turnos por WhatsApp. Le acerco una demo en vivo: https://demo-odontologia-seven.vercel.app/ - Si le gustaría conocer cómo quedaría una opción adaptada a su atención profesional, avíseme y le armamos una propuesta sin compromiso. ¡Que tenga muy buena tarde!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_16",
     "business": "Odontología Vázquez - Dra. Patricia Vázquez",
     "name": "Dra. Patricia Vázquez",
-    "niche": "Odontología Integral & Endodoncia",
+    "niche": "Odontología",
     "location": "Córdoba 616, Salta Capital",
     "phone": "5493874142754",
     "customMessage": "Hola Dra. Patricia, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Desarrollamos sitios web para consultorios y profesionales odontológicos, optimizados para celulares y con turnero directo a WhatsApp para facilitar la llegada de consultas. Le comparto una demo en vivo para ver el formato: https://demo-odontologia-seven.vercel.app/ - Si le interesa, podemos prepararle una propuesta sin costo ni compromiso. ¡Saludos cordiales!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_17",
     "business": "Dra. Cecilia Peña - Ortodoncia",
     "name": "Dra. Cecilia Peña",
-    "niche": "Ortodoncia & Alineadores",
+    "niche": "Odontología",
     "location": "Salta Capital",
     "phone": "5493875489257",
     "customMessage": "Hola Dra. Cecilia, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Nos dedicamos a la creación de páginas web para odontólogos y especialistas en ortodoncia, diseñadas para mostrar casos, especialidades y agilizar turnos por WhatsApp. Le comparto un ejemplo en vivo: https://demo-odontologia-seven.vercel.app/ - Si le parece de utilidad para su práctica, con gusto le armamos una maqueta preliminar sin compromiso. ¡Que tenga un excelente día!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_18",
     "business": "Consultorio Dra. Rosario Gutiérrez",
     "name": "Dra. Rosario Gutiérrez",
-    "niche": "Odontología Integral & Estética Dental",
+    "niche": "Odontología",
     "location": "Gorriti 193, Salta Capital",
     "phone": "5493874596697",
     "customMessage": "Hola Dra. Rosario, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Diseñamos sitios web modernos para odontólogas y consultorios dentales, pensados para que los pacientes encuentren rápido la información y soliciten turnos directamente por WhatsApp. Le dejo una demo en vivo de muestra: https://demo-odontologia-seven.vercel.app/ - Si le gustaría ver una opción para su consultorio, quedo a su disposición sin compromiso. ¡Saludos cordiales!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_19",
     "business": "Dr. Gonzalo Ocampo - Estética Odontológica",
     "name": "Dr. Gonzalo Ocampo",
-    "niche": "Estética Dental & Restauraciones",
+    "niche": "Odontología",
     "location": "Salta Capital",
     "phone": "5493875666962",
     "customMessage": "Hola Dr. Gonzalo, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Creamos páginas web para odontólogos y especialistas en estética dental, enfocadas en una presentación visual clara y en facilitar la coordinación de turnos por WhatsApp desde el teléfono. Le comparto una demo en vivo: https://demo-odontologia-seven.vercel.app/ - Si le interesa evaluar una maqueta sin costo ni compromiso, con gusto se la preparamos. ¡Saludos y que tenga un buen día!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_20",
     "business": "Odontología Integral Zuviría",
     "name": "Dra. Romina & Equipo",
-    "niche": "Odontología General & Cirugía",
+    "niche": "Odontología",
     "location": "Zuviría 352, Salta Capital",
     "phone": "5493875736492",
     "customMessage": "Hola, ¿cómo están? Buenas tardes. Les escribo desde Aura Web. Desarrollamos páginas web para profesionales y centros odontológicos, con diseño adaptado a móviles y turnero directo a WhatsApp para simplificar las consultas de los pacientes. Les comparto una demo en vivo para que puedan ver el funcionamiento: https://demo-odontologia-seven.vercel.app/ - Si les parece interesante, podemos armarles una propuesta sin ningún compromiso. ¡Que tengan una muy buena jornada!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_21",
     "business": "ODONTOLOGIA INTEGRAL SALTA",
     "name": "Equipo ODONTOLOGIA INTEGRAL SALTA",
-    "niche": "Clínica dental",
+    "niche": "Odontología",
     "location": "25 de Mayo 148, A4400 Salta",
     "phone": "5493875286708",
     "customMessage": "Hola, ¿cómo están? Buenas tardes. Le escribo desde Aura Web. Nos especializamos en el desarrollo de páginas web modernas para profesionales y clínicas odontológicas. Diseñamos plataformas ágiles para celulares con catálogo de especialidades y botón directo para solicitar turnos por WhatsApp. Le comparto una demo en vivo de muestra: https://demo-odontologia-seven.vercel.app/ - Si le gustaría ver una maqueta pensada para ODONTOLOGIA INTEGRAL SALTA sin costo ni compromiso, quedo a su disposición. ¡Que tenga una excelente jornada!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_22",
     "business": "OdontoSalud Salta",
     "name": "OdontoSalud Salta",
-    "niche": "Clínica dental",
+    "niche": "Odontología",
     "location": "Pueyrredón 2550, A4400 Salta",
     "phone": "5493874396756",
     "customMessage": "Hola, ¿cómo están? Buenas tardes. Le escribo desde Aura Web. Nos especializamos en el desarrollo de páginas web modernas para profesionales y clínicas odontológicas. Diseñamos plataformas ágiles para celulares con catálogo de especialidades y botón directo para solicitar turnos por WhatsApp. Le comparto una demo en vivo de muestra: https://demo-odontologia-seven.vercel.app/ - Si le gustaría ver una maqueta pensada para OdontoSalud Salta sin costo ni compromiso, quedo a su disposición. ¡Que tenga una excelente jornada!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_23",
     "business": "Consultorio Odontologico Dr Quintanal Dra Terzi",
     "name": "Equipo Consultorio Odontologico Dr Quintanal Dra Terzi",
-    "niche": "Dentista cosmético",
+    "niche": "Odontología",
     "location": "Rivadavia 351, A4400 Salta",
     "phone": "5493814511021",
     "customMessage": "Hola, ¿cómo están? Buenas tardes. Le escribo desde Aura Web. Nos especializamos en el desarrollo de páginas web modernas para profesionales y clínicas odontológicas. Diseñamos plataformas ágiles para celulares con catálogo de especialidades y botón directo para solicitar turnos por WhatsApp. Le comparto una demo en vivo de muestra: https://demo-odontologia-seven.vercel.app/ - Si le gustaría ver una maqueta pensada para Consultorio Odontologico Dr Quintanal Dra Terzi sin costo ni compromiso, quedo a su disposición. ¡Que tenga una excelente jornada!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_24",
     "business": "Especialista Bruxismo en Salta Dr Marcelo Sclarovsky",
     "name": "Especialista Bruxismo en Salta Dr Marcelo Sclarovsky",
-    "niche": "Dentista",
+    "niche": "Odontología",
     "location": "Zuviria 1279, A4400 Salta",
     "phone": "5493875192403",
     "customMessage": "Hola, ¿cómo están? Buenas tardes. Le escribo desde Aura Web. Estuve viendo la presencia web de Especialista Bruxismo en Salta Dr Marcelo Sclarovsky y noté que se beneficiaría mucho de una actualización mobile-first y un turnero interactivo directo a WhatsApp para que los pacientes agenden al instante. Le comparto una demo en vivo de cómo modernizamos sitios para odontología: https://demo-odontologia-seven.vercel.app/ - Si le parece interesante evaluar un rediseño sin compromiso, con gusto le armamos una propuesta preliminar. ¡Saludos cordiales!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_25",
     "business": "Dentis",
     "name": "Dentis",
-    "niche": "Clínica dental",
+    "niche": "Odontología",
     "location": "S Del Estero 118, Santiago del Estero 121, 4400 Salta",
     "phone": "5493874319238",
     "customMessage": "Hola, ¿cómo están? Buenas tardes. Le escribo desde Aura Web. Estuve viendo la presencia web de Dentis y noté que se beneficiaría mucho de una actualización mobile-first y un turnero interactivo directo a WhatsApp para que los pacientes agenden al instante. Le comparto una demo en vivo de cómo modernizamos sitios para odontología: https://demo-odontologia-seven.vercel.app/ - Si le parece interesante evaluar un rediseño sin compromiso, con gusto le armamos una propuesta preliminar. ¡Saludos cordiales!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_26",
     "business": "ODONTOLOGOS Ciudad del Milagro",
     "name": "Equipo ODONTOLOGOS Ciudad del Milagro",
-    "niche": "Dentista",
+    "niche": "Odontología",
     "location": "Av.Batalla de Salta 262, Gral.Balcarce, Salta, Argentina., A4400 Salta",
     "phone": "5493874252851",
     "customMessage": "Hola, ¿cómo están? Buenas tardes. Le escribo desde Aura Web. Nos especializamos en el desarrollo de páginas web modernas para profesionales y clínicas odontológicas. Diseñamos plataformas ágiles para celulares con catálogo de especialidades y botón directo para solicitar turnos por WhatsApp. Le comparto una demo en vivo de muestra: https://demo-odontologia-seven.vercel.app/ - Si le gustaría ver una maqueta pensada para ODONTOLOGOS Ciudad del Milagro sin costo ni compromiso, quedo a su disposición. ¡Que tenga una excelente jornada!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_27",
     "business": "Abudi Grupo Odontológico",
     "name": "Equipo Abudi Grupo Odontológico",
-    "niche": "Dentista",
+    "niche": "Odontología",
     "location": "Alvarado 1054, 4400 Salta",
     "phone": "5493872476193",
     "customMessage": "Hola, ¿cómo están? Buenas tardes. Le escribo desde Aura Web. Nos especializamos en el desarrollo de páginas web modernas para profesionales y clínicas odontológicas. Diseñamos plataformas ágiles para celulares con catálogo de especialidades y botón directo para solicitar turnos por WhatsApp. Le comparto una demo en vivo de muestra: https://demo-odontologia-seven.vercel.app/ - Si le gustaría ver una maqueta pensada para Abudi Grupo Odontológico sin costo ni compromiso, quedo a su disposición. ¡Que tenga una excelente jornada!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_28",
     "business": "DENTAL SALTA ODONTOLOGIA IPS, MEDIFE, SANCOR Y OBRAS SOCIALES",
     "name": "Equipo DENTAL SALTA ODONTOLOGIA IPS, MEDIFE, SANCOR Y OBRAS SOCIALES",
-    "niche": "Dentista",
+    "niche": "Odontología",
     "location": "Balcarce 700, A4400 Salta",
     "phone": "5493876150804",
     "customMessage": "Hola, ¿cómo están? Buenas tardes. Le escribo desde Aura Web. Nos especializamos en el desarrollo de páginas web modernas para profesionales y clínicas odontológicas. Diseñamos plataformas ágiles para celulares con catálogo de especialidades y botón directo para solicitar turnos por WhatsApp. Le comparto una demo en vivo de muestra: https://demo-odontologia-seven.vercel.app/ - Si le gustaría ver una maqueta pensada para DENTAL SALTA ODONTOLOGIA IPS, MEDIFE, SANCOR Y OBRAS SOCIALES sin costo ni compromiso, quedo a su disposición. ¡Que tenga una excelente jornada!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_29",
     "business": "Herrera Narciso Dr Consultorio Odontologico",
     "name": "Equipo Herrera Narciso Dr Consultorio Odontologico",
-    "niche": "Dentista",
+    "niche": "Odontología",
     "location": "Av. Sarmiento 548, A4400 Salta",
     "phone": "5493876092133",
     "customMessage": "Hola, ¿cómo están? Buenas tardes. Le escribo desde Aura Web. Nos especializamos en el desarrollo de páginas web modernas para profesionales y clínicas odontológicas. Diseñamos plataformas ágiles para celulares con catálogo de especialidades y botón directo para solicitar turnos por WhatsApp. Le comparto una demo en vivo de muestra: https://demo-odontologia-seven.vercel.app/ - Si le gustaría ver una maqueta pensada para Herrera Narciso Dr Consultorio Odontologico sin costo ni compromiso, quedo a su disposición. ¡Que tenga una excelente jornada!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_30",
     "business": "Consultorio Odontológico y Estudio Jurídico.",
     "name": "Equipo Consultorio Odontológico y Estudio Jurídico.",
-    "niche": "Dentista",
+    "niche": "Odontología",
     "location": "Diario los Andes 2179, A4400 Salta",
     "phone": "5493876850786",
     "customMessage": "Hola, ¿cómo están? Buenas tardes. Le escribo desde Aura Web. Nos especializamos en el desarrollo de páginas web modernas para profesionales y clínicas odontológicas. Diseñamos plataformas ágiles para celulares con catálogo de especialidades y botón directo para solicitar turnos por WhatsApp. Le comparto una demo en vivo de muestra: https://demo-odontologia-seven.vercel.app/ - Si le gustaría ver una maqueta pensada para Consultorio Odontológico y Estudio Jurídico. sin costo ni compromiso, quedo a su disposición. ¡Que tenga una excelente jornada!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_31",
     "business": "Circulo de Odontologos de Salta",
     "name": "Equipo Circulo de Odontologos de Salta",
-    "niche": "Dentista",
+    "niche": "Odontología",
     "location": "J. M. Leguizamon 1687, A4400 Salta",
     "phone": "5493874214979",
     "customMessage": "Hola, ¿cómo están? Buenas tardes. Le escribo desde Aura Web. Estuve viendo la presencia web de Circulo de Odontologos de Salta y noté que se beneficiaría mucho de una actualización mobile-first y un turnero interactivo directo a WhatsApp para que los pacientes agenden al instante. Le comparto una demo en vivo de cómo modernizamos sitios para odontología: https://demo-odontologia-seven.vercel.app/ - Si le parece interesante evaluar un rediseño sin compromiso, con gusto le armamos una propuesta preliminar. ¡Saludos cordiales!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_32",
     "business": "ODONTOLOGÍA 24HRS URGENCIAS",
     "name": "Equipo ODONTOLOGÍA 24HRS URGENCIAS",
-    "niche": "Dentista",
+    "niche": "Odontología",
     "location": "A4400 Salta",
     "phone": "5493874676810",
     "customMessage": "Hola, ¿cómo están? Buenas tardes. Le escribo desde Aura Web. Nos especializamos en el desarrollo de páginas web modernas para profesionales y clínicas odontológicas. Diseñamos plataformas ágiles para celulares con catálogo de especialidades y botón directo para solicitar turnos por WhatsApp. Le comparto una demo en vivo de muestra: https://demo-odontologia-seven.vercel.app/ - Si le gustaría ver una maqueta pensada para ODONTOLOGÍA 24HRS URGENCIAS sin costo ni compromiso, quedo a su disposición. ¡Que tenga una excelente jornada!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_33",
     "business": "OdontoNorte",
     "name": "OdontoNorte",
-    "niche": "Clínica dental",
+    "niche": "Odontología",
     "location": "Av. Fray Honorato Pistoia B°Parque General Belgrano 1ra etapa manzana J casa 10, A4400 Salta",
     "phone": "5493874628129",
     "customMessage": "Hola, ¿cómo están? Buenas tardes. Le escribo desde Aura Web. Nos especializamos en el desarrollo de páginas web modernas para profesionales y clínicas odontológicas. Diseñamos plataformas ágiles para celulares con catálogo de especialidades y botón directo para solicitar turnos por WhatsApp. Le comparto una demo en vivo de muestra: https://demo-odontologia-seven.vercel.app/ - Si le gustaría ver una maqueta pensada para OdontoNorte sin costo ni compromiso, quedo a su disposición. ¡Que tenga una excelente jornada!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_34",
     "business": "Consultorio Odontológico Dra. María Eugenia Correa",
     "name": "Consultorio Odontológico Dra. María Eugenia Correa",
-    "niche": "Dentista",
+    "niche": "Odontología",
     "location": "España 281, A4400 Salta",
     "phone": "5493875890869",
     "customMessage": "Hola Consultorio Odontológico Dra. María Eugenia Correa, ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Nos especializamos en el desarrollo de páginas web modernas para profesionales y clínicas odontológicas. Diseñamos plataformas ágiles para celulares con catálogo de especialidades y botón directo para solicitar turnos por WhatsApp. Le comparto una demo en vivo de muestra: https://demo-odontologia-seven.vercel.app/ - Si le gustaría ver una maqueta pensada para Consultorio Odontológico Dra. María Eugenia Correa sin costo ni compromiso, quedo a su disposición. ¡Que tenga una excelente jornada!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_35",
     "business": "Odontologia Los Ceibos",
     "name": "Equipo Odontologia Los Ceibos",
-    "niche": "Dentista",
+    "niche": "Odontología",
     "location": "Los Ceibos 299, A4400 Salta",
     "phone": "5493875355363",
     "customMessage": "Hola, ¿cómo están? Buenas tardes. Le escribo desde Aura Web. Estuve viendo la presencia web de Odontologia Los Ceibos y noté que se beneficiaría mucho de una actualización mobile-first y un turnero interactivo directo a WhatsApp para que los pacientes agenden al instante. Le comparto una demo en vivo de cómo modernizamos sitios para odontología: https://demo-odontologia-seven.vercel.app/ - Si le parece interesante evaluar un rediseño sin compromiso, con gusto le armamos una propuesta preliminar. ¡Saludos cordiales!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_36",
     "business": "Especialidad Odontologica",
     "name": "Equipo Especialidad Odontologica",
-    "niche": "Clínica dental",
+    "niche": "Odontología",
     "location": "Catamarca 39, A4400 Salta",
     "phone": "5493874319662",
     "customMessage": "Hola, ¿cómo están? Buenas tardes. Le escribo desde Aura Web. Nos especializamos en el desarrollo de páginas web modernas para profesionales y clínicas odontológicas. Diseñamos plataformas ágiles para celulares con catálogo de especialidades y botón directo para solicitar turnos por WhatsApp. Le comparto una demo en vivo de muestra: https://demo-odontologia-seven.vercel.app/ - Si le gustaría ver una maqueta pensada para Especialidad Odontologica sin costo ni compromiso, quedo a su disposición. ¡Que tenga una excelente jornada!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_37",
     "business": "CONSULTORIO ODONTOLÓGICO Jarma-Mazza .Odontología integral.",
     "name": "Equipo CONSULTORIO ODONTOLÓGICO Jarma-Mazza .Odontología integral.",
-    "niche": "Dentista",
+    "niche": "Odontología",
     "location": "Alvarado 226, A4400 Salta",
     "phone": "5493874829070",
     "customMessage": "Hola, ¿cómo están? Buenas tardes. Le escribo desde Aura Web. Nos especializamos en el desarrollo de páginas web modernas para profesionales y clínicas odontológicas. Diseñamos plataformas ágiles para celulares con catálogo de especialidades y botón directo para solicitar turnos por WhatsApp. Le comparto una demo en vivo de muestra: https://demo-odontologia-seven.vercel.app/ - Si le gustaría ver una maqueta pensada para CONSULTORIO ODONTOLÓGICO Jarma-Mazza .Odontología integral. sin costo ni compromiso, quedo a su disposición. ¡Que tenga una excelente jornada!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_38",
     "business": "CROS Centro de Rehabilitación Odontológica Salta",
     "name": "Equipo CROS Centro de Rehabilitación Odontológica Salta",
-    "niche": "Clínica dental",
+    "niche": "Odontología",
     "location": "Gral. Martin Güemes 1087, A4400 Salta",
     "phone": "5493874222355",
     "customMessage": "Hola, ¿cómo están? Buenas tardes. Le escribo desde Aura Web. Nos especializamos en el desarrollo de páginas web modernas para profesionales y clínicas odontológicas. Diseñamos plataformas ágiles para celulares con catálogo de especialidades y botón directo para solicitar turnos por WhatsApp. Le comparto una demo en vivo de muestra: https://demo-odontologia-seven.vercel.app/ - Si le gustaría ver una maqueta pensada para CROS Centro de Rehabilitación Odontológica Salta sin costo ni compromiso, quedo a su disposición. ¡Que tenga una excelente jornada!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_39",
     "business": "Consultorios del Cerro-Odontología y Medicina",
     "name": "Equipo Consultorios del Cerro-Odontología y Medicina",
-    "niche": "Dentista",
+    "niche": "Odontología",
     "location": "Antonio Cornejo 94, A4400 Salta",
     "phone": "5493874316562",
     "customMessage": "Hola, ¿cómo están? Buenas tardes. Le escribo desde Aura Web. Nos especializamos en el desarrollo de páginas web modernas para profesionales y clínicas odontológicas. Diseñamos plataformas ágiles para celulares con catálogo de especialidades y botón directo para solicitar turnos por WhatsApp. Le comparto una demo en vivo de muestra: https://demo-odontologia-seven.vercel.app/ - Si le gustaría ver una maqueta pensada para Consultorios del Cerro-Odontología y Medicina sin costo ni compromiso, quedo a su disposición. ¡Que tenga una excelente jornada!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   },
   {
     "id": "salta_dent_40",
     "business": "Consultorio Dental San Francisco Salta (Dr. Francisco Jove - ODONTOLOGO)",
     "name": "Consultorio Dental San Francisco Salta (Dr. Francisco Jove - ODONTOLOGO)",
-    "niche": "Clínica dental",
+    "niche": "Odontología",
     "location": "Av. Belgrano 367 Departamento C, A4400 Salta",
     "phone": "5493874680507",
     "customMessage": "Hola Consultorio Dental San Francisco Salta (Dr. Francisco Jove - ODONTOLOGO), ¿cómo está? Buenas tardes. Le escribo desde Aura Web. Nos especializamos en el desarrollo de páginas web modernas para profesionales y clínicas odontológicas. Diseñamos plataformas ágiles para celulares con catálogo de especialidades y botón directo para solicitar turnos por WhatsApp. Le comparto una demo en vivo de muestra: https://demo-odontologia-seven.vercel.app/ - Si le gustaría ver una maqueta pensada para Consultorio Dental San Francisco Salta (Dr. Francisco Jove - ODONTOLOGO) sin costo ni compromiso, quedo a su disposición. ¡Que tenga una excelente jornada!",
-    "status": "PENDING"
+    "status": "PENDING",
+    "specialty": "Odontología"
   }
 ]
