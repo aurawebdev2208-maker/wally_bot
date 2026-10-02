@@ -214,6 +214,26 @@ app.post('/api/prospects', (req, res) => {
   }
 });
 
+app.get('/api/groups', (req, res) => {
+  res.json({
+    success: true,
+    data: campaign.getGroups()
+  });
+});
+
+app.post('/api/prospects/batch-group', async (req, res) => {
+  const { ids, group } = req.body;
+  if (!Array.isArray(ids) || !group) {
+    return res.status(400).json({ success: false, error: 'Parámetros inválidos. Se requiere ids (array) y group (string).' });
+  }
+  try {
+    await campaign.batchAssignGroup(ids, group);
+    res.json({ success: true, message: `Grupo "${group}" asignado a ${ids.length} prospectos.` });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 app.get('/api/campaign/status', (req, res) => {
   res.json({
     success: true,
@@ -223,8 +243,8 @@ app.get('/api/campaign/status', (req, res) => {
 
 app.post('/api/campaign/start', async (req, res) => {
   try {
-    const { delaySeconds, campaignName } = req.body;
-    const result = await campaign.start({ delaySeconds, campaignName });
+    const { delaySeconds, campaignName, targetGroup } = req.body;
+    const result = await campaign.start({ delaySeconds, campaignName, targetGroup });
     res.json({ success: true, data: result });
   } catch (err) {
     res.status(400).json({ success: false, error: err.message });

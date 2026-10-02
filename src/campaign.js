@@ -92,10 +92,47 @@ class CampaignManager {
     return this.prospectsQueue;
   }
 
+  getGroups() {
+    const groupMap = {};
+    for (const p of this.prospectsQueue) {
+      const groupName = p.niche || p.group || 'General';
+      if (!groupMap[groupName]) {
+        groupMap[groupName] = {
+          name: groupName,
+          total: 0,
+          pending: 0,
+          sent: 0,
+          failed: 0
+        };
+      }
+      groupMap[groupName].total++;
+      if (p.status === 'SENT') groupMap[groupName].sent++;
+      else if (p.status === 'FAILED') groupMap[groupName].failed++;
+      else groupMap[groupName].pending++;
+    }
+    return Object.values(groupMap);
+  }
+
+  async batchAssignGroup(prospectIds, newGroupName) {
+    if (!Array.isArray(prospectIds) || !newGroupName) return false;
+    let modified = false;
+    for (const p of this.prospectsQueue) {
+      if (prospectIds.includes(p.id)) {
+        p.niche = newGroupName;
+        modified = true;
+      }
+    }
+    if (modified) {
+      await this.saveProspects(this.prospectsQueue);
+    }
+    return true;
+  }
+
   getStatus() {
     return {
       ...this.state,
       prospectsCount: this.prospectsQueue.length,
+      groups: this.getGroups(),
       isDbConnected: db.isConnected
     };
   }
@@ -135,21 +172,35 @@ class CampaignManager {
 
     const delaySec = Math.max(Number(options.delaySeconds) || this.state.delaySeconds, 15);
     const campaignName = options.campaignName || 'Aura Web Outreach';
+    const targetGroup = options.targetGroup && options.targetGroup !== 'ALL' ? options.targetGroup : null;
 
-    // Filtrar prospectos pendientes o nuevos
-    const pendingList = this.prospectsQueue.filter(p => !p.status || p.status === 'PENDING' || p.status === 'FAILED');
+    // Filtrar prospectos pendientes que pertenezcan al grupo objetivo (si se eligió uno)
+    const pendingList = this.prospectsQueue.filter(p => {
+      const isPending = !p.status || p.status === 'PENDING' || p.status === 'FAILED';
+      if (!isPending) return false;
+      if (!targetGroup) return true;
+      const groupName = p.niche || p.group || 'General';
+      return groupName.toLowerCase() === targetGroup.toLowerCase();
+    });
 
     if (pendingList.length === 0) {
-      throw new Error('Todos los prospectos en la lista ya fueron marcados como enviados.');
+      throw new Error(targetGroup 
+        ? `No hay prospectos pendientes en el grupo "${targetGroup}".`
+        : 'Todos los prospectos en la lista ya fueron marcados como enviados.');
     }
+
+    const groupProspects = targetGroup 
+      ? this.prospectsQueue.filter(p => (p.niche || p.group || 'General').toLowerCase() === targetGroup.toLowerCase())
+      : this.prospectsQueue;
 
     this.state = {
       isRunning: true,
       isPaused: false,
-      campaignName,
-      total: this.prospectsQueue.length,
-      sent: this.prospectsQueue.filter(p => p.status === 'SENT').length,
-      failed: this.prospectsQueue.filter(p => p.status === 'FAILED').length,
+      campaignName: targetGroup ? `${campaignName} [${targetGroup}]` : campaignName,
+      targetGroup: targetGroup || 'ALL',
+      total: groupProspects.length,
+      sent: groupProspects.filter(p => p.status === 'SENT').length,
+      failed: groupProspects.filter(p => p.status === 'FAILED').length,
       pending: pendingList.length,
       currentIndex: 0,
       currentProspect: null,
@@ -159,7 +210,8 @@ class CampaignManager {
       logs: this.state.logs
     };
 
-    this.addLog('info', `Iniciando campaña "${campaignName}" con ${pendingList.length} prospectos pendientes. Delay de seguridad: ${delaySec}s.`);
+    const targetLabel = targetGroup ? `Grupo "${targetGroup}"` : 'Todos los grupos';
+    this.addLog('info', `Iniciando campaña para ${targetLabel} con ${pendingList.length} prospectos pendientes. Delay de seguridad: ${delaySec}s.`);
 
     this.processNext();
     return this.getStatus();
@@ -168,8 +220,14 @@ class CampaignManager {
   async processNext() {
     if (!this.state.isRunning || this.state.isPaused) return;
 
-    // Buscar el siguiente prospecto pendiente
-    const prospect = this.prospectsQueue.find(p => !p.status || p.status === 'PENDING');
+    // Buscar el siguiente prospecto pendiente del grupo objetivo
+    const prospect = this.prospectsQueue.find(p => {
+      const isPending = !p.status || p.status === 'PENDING';
+      if (!isPending) return false;
+      if (!this.state.targetGroup || this.state.targetGroup === 'ALL') return true;
+      const groupName = p.niche || p.group || 'General';
+      return groupName.toLowerCase() === this.state.targetGroup.toLowerCase();
+    });
 
     if (!prospect) {
       this.state.isRunning = false;
@@ -181,7 +239,8 @@ class CampaignManager {
     }
 
     this.state.currentProspect = prospect;
-    this.addLog('info', `Preparando envío a: ${prospect.name || prospect.business} (${prospect.phone})...`);
+    const groupName = prospect.niche || prospect.group || 'General';
+    this.addLog('info', `Preparando envío a [${groupName}]: ${prospect.name || prospect.business} (${prospect.phone})...`);
 
     try {
       const messageText = prospect.customMessage || prospect.message;
@@ -196,10 +255,17 @@ class CampaignManager {
       prospect.messageId = result.messageId;
 
       this.state.sent++;
-      this.state.pending = this.prospectsQueue.filter(p => !p.status || p.status === 'PENDING').length;
+      const targetGroup = this.state.targetGroup && this.state.targetGroup !== 'ALL' ? this.state.targetGroup.toLowerCase() : null;
+      this.state.pending = this.prospectsQueue.filter(p => {
+        const isPending = !p.status || p.status === 'PENDING';
+        if (!isPending) return false;
+        if (!targetGroup) return true;
+        const g = (p.niche || p.group || 'General').toLowerCase();
+        return g === targetGroup;
+      }).length;
       await this.saveProspects(this.prospectsQueue);
 
-      this.addLog('success', `Mensaje enviado con éxito a ${prospect.name || prospect.business}`, { phone: prospect.phone });
+      this.addLog('success', `Mensaje enviado con éxito a ${prospect.name || prospect.business} [${groupName}]`, { phone: prospect.phone });
     } catch (err) {
       console.error(`[Campaign] Error enviando a ${prospect.phone}:`, err);
       prospect.status = 'FAILED';
@@ -207,7 +273,14 @@ class CampaignManager {
       prospect.failedAt = new Date().toISOString();
 
       this.state.failed++;
-      this.state.pending = this.prospectsQueue.filter(p => !p.status || p.status === 'PENDING').length;
+      const targetGroup = this.state.targetGroup && this.state.targetGroup !== 'ALL' ? this.state.targetGroup.toLowerCase() : null;
+      this.state.pending = this.prospectsQueue.filter(p => {
+        const isPending = !p.status || p.status === 'PENDING';
+        if (!isPending) return false;
+        if (!targetGroup) return true;
+        const g = (p.niche || p.group || 'General').toLowerCase();
+        return g === targetGroup;
+      }).length;
       await this.saveProspects(this.prospectsQueue);
 
       this.addLog('error', `Error al enviar a ${prospect.name || prospect.business}: ${err.message}`, { phone: prospect.phone });

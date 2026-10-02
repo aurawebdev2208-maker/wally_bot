@@ -354,9 +354,20 @@
         </div>
 
         <div class="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2.5 sm:gap-3">
+          <!-- Target Group Selector -->
+          <div class="flex items-center justify-between sm:justify-start gap-2 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs">
+            <span class="text-slate-400 flex-shrink-0 flex items-center gap-1">
+              <span class="material-symbols-outlined text-[15px] text-emerald-400">category</span>
+              Grupo:
+            </span>
+            <select id="campaignTargetGroup" class="bg-transparent text-emerald-400 font-bold focus:outline-none cursor-pointer max-w-[140px] sm:max-w-[200px]">
+              <option value="ALL" class="bg-slate-900 text-white">🌐 Todos los grupos</option>
+            </select>
+          </div>
+
           <!-- Delay Selector -->
           <div class="flex items-center justify-between sm:justify-start gap-2 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs">
-            <span class="text-slate-400 flex-shrink-0">Pausa entre envíos:</span>
+            <span class="text-slate-400 flex-shrink-0">Pausa:</span>
             <select id="campaignDelay" class="bg-transparent text-white font-medium focus:outline-none cursor-pointer">
               <option value="30" class="bg-slate-900">30s (Recomendado)</option>
               <option value="45" class="bg-slate-900">45s (Ultra Seguro)</option>
@@ -395,7 +406,7 @@
 
         <!-- Prospects Table / Cards (Left 7 cols) -->
         <div class="lg:col-span-7 bg-slate-900/80 border border-slate-800 rounded-2xl p-4 sm:p-5 space-y-3 sm:space-y-4 flex flex-col">
-          <div class="flex items-center justify-between">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
             <h3 class="text-xs sm:text-sm font-bold text-white flex items-center gap-1.5 sm:gap-2">
               <span class="material-symbols-outlined text-emerald-400 text-base sm:text-lg">group</span>
               Lista de Prospectos
@@ -409,6 +420,13 @@
                 <span class="material-symbols-outlined text-[15px]">restart_alt</span>
               </button>
             </div>
+          </div>
+
+          <!-- Group Filter Pills Bar -->
+          <div id="groupFilterPills" class="flex items-center gap-1.5 overflow-x-auto pb-1.5 custom-scrollbar text-xs">
+            <button onclick="setFilterGroup('ALL')" class="group-pill active px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-semibold whitespace-nowrap">
+              🌐 Todos (0)
+            </button>
           </div>
 
           <!-- Desktop Table View (Hidden on mobile) -->
@@ -519,9 +537,20 @@
             <input type="text" id="mName" placeholder="Ej: Dr. Pérez" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-emerald-500 text-sm">
           </div>
           <div>
-            <label class="block font-semibold text-slate-300 mb-1">Teléfono WhatsApp:</label>
-            <input type="text" id="mPhone" required placeholder="Ej: 5493871234567" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-emerald-500 font-mono text-sm">
+            <label class="block font-semibold text-slate-300 mb-1">Grupo / Nicho:</label>
+            <input type="text" id="mNiche" placeholder="Ej: Odontología, Estética..." list="nicheDatalist" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-emerald-400 font-semibold focus:outline-none focus:border-emerald-500 text-sm">
+            <datalist id="nicheDatalist">
+              <option value="Odontología"></option>
+              <option value="Estética & Spa"></option>
+              <option value="Inmobiliaria"></option>
+              <option value="Turismo & Cabañas"></option>
+            </datalist>
           </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-300 mb-1">Teléfono WhatsApp:</label>
+          <input type="text" id="mPhone" required placeholder="Ej: 5493871234567" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-emerald-500 font-mono text-sm">
         </div>
 
         <div>
@@ -756,6 +785,62 @@
       }
     }
 
+    let currentFilterGroup = 'ALL';
+    let availableGroups = [];
+
+    function setFilterGroup(groupName) {
+      currentFilterGroup = groupName;
+      renderGroupPills(availableGroups);
+      renderProspectsTable();
+    }
+
+    function renderGroupPills(groups) {
+      availableGroups = groups || [];
+      const container = document.getElementById('groupFilterPills');
+      if (!container) return;
+
+      const totalCount = prospects.length;
+      let html = `
+        <button onclick="setFilterGroup('ALL')" class="px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition ${currentFilterGroup === 'ALL' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm' : 'bg-slate-800 text-slate-400 hover:text-white border border-slate-700/60'}">
+          🌐 Todos (${totalCount})
+        </button>
+      `;
+
+      availableGroups.forEach(g => {
+        const isActive = currentFilterGroup.toLowerCase() === g.name.toLowerCase();
+        let icon = 'folder';
+        if (g.name.toLowerCase().includes('odont') || g.name.toLowerCase().includes('dent')) icon = 'dentistry';
+        else if (g.name.toLowerCase().includes('estet') || g.name.toLowerCase().includes('spa')) icon = 'spa';
+        else if (g.name.toLowerCase().includes('inmob') || g.name.toLowerCase().includes('alquiler')) icon = 'real_estate_agent';
+        else if (g.name.toLowerCase().includes('turism') || g.name.toLowerCase().includes('caban')) icon = 'cabin';
+
+        html += `
+          <button onclick="setFilterGroup('${g.name}')" class="px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition flex items-center gap-1.5 ${isActive ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm' : 'bg-slate-800 text-slate-400 hover:text-white border border-slate-700/60'}">
+            <span class="material-symbols-outlined text-[14px]">${icon}</span>
+            ${g.name} (${g.total})
+          </button>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function updateTargetGroupDropdown(groups) {
+      const select = document.getElementById('campaignTargetGroup');
+      if (!select) return;
+
+      const currentVal = select.value;
+      const totalPending = prospects.filter(p => !p.status || p.status === 'PENDING').length;
+
+      let html = `<option value="ALL" class="bg-slate-900 text-white font-bold" ${currentVal === 'ALL' ? 'selected' : ''}>🌐 Todos los grupos (${totalPending} pendientes)</option>`;
+
+      (groups || []).forEach(g => {
+        html += `<option value="${g.name}" class="bg-slate-900 text-white font-semibold" ${currentVal === g.name ? 'selected' : ''}>📁 ${g.name} (${g.pending} pendientes)</option>`;
+      });
+
+      select.innerHTML = html;
+    }
+
     // Prospects handling
     async function loadProspects() {
       if (!authToken) return;
@@ -784,10 +869,14 @@
       document.getElementById('statPending').textContent = prospects.filter(p => !p.status || p.status === 'PENDING').length;
       document.getElementById('statFailed').textContent = prospects.filter(p => p.status === 'FAILED').length;
 
-      if (prospects.length === 0) {
+      const displayList = currentFilterGroup === 'ALL'
+        ? prospects
+        : prospects.filter(p => (p.niche || p.group || 'General').toLowerCase() === currentFilterGroup.toLowerCase());
+
+      if (displayList.length === 0) {
         const emptyHtml = `
           <div class="p-8 text-center text-slate-500 text-xs">
-            No hay prospectos en la lista. Hacé click en <strong>Agregar</strong> para cargar uno.
+            No hay prospectos ${currentFilterGroup !== 'ALL' ? `en el grupo <strong>${currentFilterGroup}</strong>` : 'en la lista'}. Hacé click en <strong>Agregar</strong> para cargar uno.
           </div>
         `;
         tbody.innerHTML = `<tr><td colspan="4">${emptyHtml}</td></tr>`;
@@ -796,7 +885,7 @@
       }
 
       // 1. Render Desktop Table Rows
-      tbody.innerHTML = prospects.map((p, idx) => {
+      tbody.innerHTML = displayList.map((p, idx) => {
         let statusBadge = `<span class="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full text-[10px] font-semibold">⏳ Pendiente</span>`;
         if (p.status === 'SENT') {
           statusBadge = `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full text-[10px] font-semibold">✅ Enviado</span>`;
@@ -804,17 +893,22 @@
           statusBadge = `<span class="bg-rose-500/10 text-rose-400 border border-rose-500/20 px-2 py-0.5 rounded-full text-[10px] font-semibold" title="${p.error || 'Error'}">❌ Falló</span>`;
         }
 
+        const groupBadge = `<span class="px-2 py-0.5 rounded-md bg-slate-800 text-[10px] font-medium text-slate-300 border border-slate-700/60">${p.niche || p.group || 'General'}</span>`;
+
         return `
           <tr class="hover:bg-slate-800/40 transition">
             <td class="p-3">
-              <div class="font-bold text-white">${p.business || 'Sin nombre'}</div>
-              <div class="text-[11px] text-slate-400">${p.name ? p.name + ' • ' : ''}${p.niche || 'General'}</div>
+              <div class="font-bold text-white flex items-center gap-2">
+                <span>${p.business || 'Sin nombre'}</span>
+                ${groupBadge}
+              </div>
+              <div class="text-[11px] text-slate-400">${p.name ? p.name + ' • ' : ''}${p.location || 'Salta'}</div>
             </td>
             <td class="p-3 font-mono text-slate-300">${p.phone}</td>
             <td class="p-3">${statusBadge}</td>
             <td class="p-3 text-right">
               <div class="flex items-center justify-end gap-1">
-                <button onclick="editProspect('${p.id || idx}')" title="Editar mensaje" class="p-1.5 rounded-lg hover:bg-slate-700 text-slate-400 hover:text-white transition">
+                <button onclick="editProspect('${p.id || idx}')" title="Editar mensaje y grupo" class="p-1.5 rounded-lg hover:bg-slate-700 text-slate-400 hover:text-white transition">
                   <span class="material-symbols-outlined text-[16px]">edit</span>
                 </button>
                 <button onclick="deleteProspect('${p.id || idx}')" title="Eliminar" class="p-1.5 rounded-lg hover:bg-slate-700 text-rose-400 hover:text-rose-300 transition">
@@ -827,7 +921,7 @@
       }).join('');
 
       // 2. Render Mobile Cards View
-      mobileContainer.innerHTML = prospects.map((p, idx) => {
+      mobileContainer.innerHTML = displayList.map((p, idx) => {
         let statusBadge = `<span class="bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full text-[10px] font-semibold">⏳ Pendiente</span>`;
         if (p.status === 'SENT') {
           statusBadge = `<span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full text-[10px] font-semibold">✅ Enviado</span>`;
@@ -840,7 +934,10 @@
             <div class="flex items-start justify-between gap-2">
               <div class="min-w-0">
                 <h4 class="font-bold text-white text-xs truncate">${p.business || 'Sin nombre'}</h4>
-                <p class="text-[11px] text-slate-400 truncate">${p.name ? p.name + ' • ' : ''}${p.niche || 'General'}</p>
+                <div class="flex items-center gap-1.5 mt-0.5">
+                  <span class="px-1.5 py-0.2 rounded bg-slate-800 text-[10px] text-emerald-300 font-medium">${p.niche || p.group || 'General'}</span>
+                  <span class="text-[11px] text-slate-400 truncate">${p.name || ''}</span>
+                </div>
               </div>
               <div class="flex-shrink-0">${statusBadge}</div>
             </div>
@@ -871,6 +968,7 @@
       document.getElementById('prospectId').value = '';
       document.getElementById('mBusiness').value = '';
       document.getElementById('mName').value = '';
+      document.getElementById('mNiche').value = currentFilterGroup !== 'ALL' ? currentFilterGroup : 'Odontología';
       document.getElementById('mPhone').value = '';
       document.getElementById('mCustomMessage').value = '';
       document.getElementById('prospectModal').classList.remove('hidden');
@@ -888,6 +986,7 @@
       document.getElementById('prospectId').value = p.id || idOrIdx;
       document.getElementById('mBusiness').value = p.business || '';
       document.getElementById('mName').value = p.name || '';
+      document.getElementById('mNiche').value = p.niche || p.group || 'Odontología';
       document.getElementById('mPhone').value = p.phone || '';
       document.getElementById('mCustomMessage').value = p.customMessage || p.message || '';
       document.getElementById('prospectModal').classList.remove('hidden');
@@ -898,6 +997,7 @@
       const id = document.getElementById('prospectId').value;
       const business = document.getElementById('mBusiness').value.trim();
       const name = document.getElementById('mName').value.trim();
+      const niche = document.getElementById('mNiche').value.trim() || 'General';
       const phone = document.getElementById('mPhone').value.trim();
       const customMessage = document.getElementById('mCustomMessage').value.trim();
 
@@ -906,6 +1006,7 @@
         if (p) {
           p.business = business;
           p.name = name;
+          p.niche = niche;
           p.phone = phone;
           p.customMessage = customMessage;
         }
@@ -914,6 +1015,7 @@
           id: 'p_' + Date.now(),
           business,
           name,
+          niche,
           phone,
           customMessage,
           status: 'PENDING'
@@ -986,11 +1088,15 @@
     // Campaign Execution
     async function startCampaign() {
       const delaySeconds = document.getElementById('campaignDelay').value;
+      const targetGroup = document.getElementById('campaignTargetGroup').value;
       try {
         const res = await authFetch('/api/campaign/start', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ delaySeconds: Number(delaySeconds) })
+          body: JSON.stringify({ 
+            delaySeconds: Number(delaySeconds),
+            targetGroup: targetGroup !== 'ALL' ? targetGroup : undefined
+          })
         });
         const json = await res.json();
         if (!json.success) {
@@ -1047,6 +1153,12 @@
       const btnResume = document.getElementById('btnResumeCampaign');
       const btnStop = document.getElementById('btnStopCampaign');
 
+      // Update Group Pills and Target Group Selector
+      if (state.groups) {
+        renderGroupPills(state.groups);
+        updateTargetGroupDropdown(state.groups);
+      }
+
       if (state.isRunning) {
         if (state.isPaused) {
           title.textContent = 'Campaña Pausada';
@@ -1059,7 +1171,8 @@
           btnResume.classList.remove('hidden');
           btnStop.classList.remove('hidden');
         } else {
-          title.textContent = `Campaña en Progreso (${state.sent}/${state.total})`;
+          const groupTag = state.targetGroup && state.targetGroup !== 'ALL' ? ` [${state.targetGroup}]` : '';
+          title.textContent = `Campaña en Progreso${groupTag} (${state.sent}/${state.total})`;
           subtitle.textContent = state.currentProspect ? `Enviando a: ${state.currentProspect.business || state.currentProspect.name}` : 'Procesando cola...';
           icon.className = 'w-10 h-10 flex-shrink-0 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center';
           icon.innerHTML = '<span class="material-symbols-outlined text-2xl animate-spin">sync</span>';
