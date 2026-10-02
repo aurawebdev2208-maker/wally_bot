@@ -641,27 +641,26 @@
       if (!container) return;
 
       const toast = document.createElement('div');
-      toast.className = 'pointer-events-auto bg-slate-900/95 backdrop-blur-md border rounded-2xl p-3.5 sm:p-4 shadow-2xl shadow-black/80 flex items-start gap-3 transform translate-y-2 opacity-0 transition-all duration-300';
       
-      let borderColor = 'border-slate-800';
+      let borderAndBg = 'border-slate-800 bg-slate-900/95';
       let iconColor = 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
       let iconName = 'check_circle';
 
       if (type === 'error') {
-        borderColor = 'border-rose-500/40 bg-slate-950/95';
+        borderAndBg = 'border-rose-500/40 bg-slate-950/95';
         iconColor = 'text-rose-400 bg-rose-500/10 border-rose-500/20';
         iconName = 'error';
       } else if (type === 'warning') {
-        borderColor = 'border-amber-500/40 bg-slate-950/95';
+        borderAndBg = 'border-amber-500/40 bg-slate-950/95';
         iconColor = 'text-amber-400 bg-amber-500/10 border-amber-500/20';
         iconName = 'warning';
       } else if (type === 'info') {
-        borderColor = 'border-cyan-500/40 bg-slate-950/95';
+        borderAndBg = 'border-cyan-500/40 bg-slate-950/95';
         iconColor = 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20';
         iconName = 'info';
       }
 
-      toast.classList.add(borderColor);
+      toast.className = `pointer-events-auto backdrop-blur-md border rounded-2xl p-3.5 sm:p-4 shadow-2xl shadow-black/80 flex items-start gap-3 transform translate-y-2 opacity-0 transition-all duration-300 ${borderAndBg}`;
       toast.innerHTML = `
         <div class="w-8 h-8 rounded-xl border flex items-center justify-center flex-shrink-0 ${iconColor}">
           <span class="material-symbols-outlined text-lg">${iconName}</span>
