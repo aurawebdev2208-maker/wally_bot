@@ -147,14 +147,22 @@ class WhatsAppManager {
                     timestamp: msg.messageTimestamp ? new Date(Number(msg.messageTimestamp) * 1000) : new Date()
                   });
 
-                  // Guardar en agent_inbox para Antigravity
-                  console.log(`[WhatsApp] 📥 ¡Nuevo prompt registrado para Antigravity!: "${text}" de ${remoteJid}`);
-                  await db.saveInboxMessage({
-                    remoteJid,
-                    phone: cleanPhone,
-                    senderName: senderName || 'Darío',
-                    messageText: text
-                  });
+                  // Verificar si el remitente es Darío (Administrador / Desarrollador)
+                  const ADMIN_IDENTIFIERS = ['5493885104530', '543885104530', '3885104530', '93445687386215'];
+                  const isAdmin = ADMIN_IDENTIFIERS.some(id => cleanPhone.includes(id) || remoteJid.includes(id));
+
+                  if (isAdmin) {
+                    // Guardar en agent_inbox para Antigravity
+                    console.log(`[WhatsApp] 📥 ¡Nuevo prompt de Darío registrado para Antigravity!: "${text}" (${remoteJid})`);
+                    await db.saveInboxMessage({
+                      remoteJid,
+                      phone: cleanPhone,
+                      senderName: senderName || 'Darío',
+                      messageText: text
+                    });
+                  } else {
+                    console.log(`[WhatsApp] 💼 Respuesta de prospecto/lead guardada en CRM: ${senderName} (${cleanPhone})`);
+                  }
                 }
               }
             }
