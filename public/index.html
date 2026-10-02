@@ -570,8 +570,8 @@
   <div id="toastContainer" class="fixed top-4 right-4 z-[9999] flex flex-col gap-2.5 max-w-sm w-full pointer-events-none p-2 sm:p-0"></div>
 
   <!-- UNIVERSAL MODERN DIALOG MODAL (Replaces native alert, confirm, prompt) -->
-  <div id="customDialogModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[9990] hidden flex items-center justify-center p-4 transition-all duration-300 opacity-0 pointer-events-none">
-    <div id="customDialogBox" class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl shadow-black/80 space-y-4 transform scale-95 transition-all duration-300">
+  <div id="customDialogModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[9990] hidden flex items-center justify-center p-4 transition-all duration-300 opacity-0">
+    <div id="customDialogBox" class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl shadow-black/80 space-y-4 transform scale-95 transition-all duration-300 pointer-events-auto">
       
       <div class="flex items-start gap-3.5">
         <div id="dialogIconBox" class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0 shadow-inner">
@@ -597,10 +597,10 @@
       </div>
 
       <div class="pt-2 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 border-t border-slate-800/80">
-        <button id="dialogBtnCancel" type="button" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition text-center active:scale-95">
+        <button id="dialogBtnCancel" type="button" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs transition text-center active:scale-95 cursor-pointer">
           Cancelar
         </button>
-        <button id="dialogBtnConfirm" type="button" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold text-xs transition shadow-lg shadow-emerald-600/20 text-center active:scale-95 flex items-center justify-center gap-1.5">
+        <button id="dialogBtnConfirm" type="button" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold text-xs transition shadow-lg shadow-emerald-600/20 text-center active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer">
           <span id="dialogBtnConfirmText">Confirmar</span>
         </button>
       </div>
@@ -706,10 +706,10 @@
       btnCancel.disabled = false;
 
       btnConfirm.disabled = false;
-      btnConfirm.className = `px-5 py-2.5 rounded-xl font-bold text-xs transition shadow-lg text-center active:scale-95 flex items-center justify-center gap-1.5 ${confirmClass}`;
+      btnConfirm.className = `px-5 py-2.5 rounded-xl font-bold text-xs transition shadow-lg text-center active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer ${confirmClass}`;
       btnConfirm.innerHTML = `<span id="dialogBtnConfirmText">${confirmText}</span>`;
 
-      modal.classList.remove('hidden', 'pointer-events-none');
+      modal.classList.remove('hidden');
       requestAnimationFrame(() => {
         modal.classList.remove('opacity-0');
         box.classList.remove('scale-95');
@@ -719,7 +719,7 @@
         modal.classList.add('opacity-0');
         box.classList.add('scale-95');
         setTimeout(() => {
-          modal.classList.add('hidden', 'pointer-events-none');
+          modal.classList.add('hidden');
           loadingStatus.classList.add('hidden');
         }, 250);
       }
@@ -755,7 +755,7 @@
       };
     }
 
-    function showModernPrompt({ title, message, label = 'Dato requerido:', defaultValue = '', placeholder = '', hint = '', icon = 'edit', confirmText = 'Aceptar', onConfirm }) {
+    function showModernPrompt({ title, message, label = 'Dato requerido:', defaultValue = '3885104530', placeholder = '3885104530', hint = '', icon = 'edit', confirmText = 'Aceptar', onConfirm }) {
       const modal = document.getElementById('customDialogModal');
       const box = document.getElementById('customDialogBox');
       const titleEl = document.getElementById('dialogTitle');
@@ -779,8 +779,8 @@
       promptContainer.classList.remove('hidden');
       loadingStatus.classList.add('hidden');
       promptLabel.textContent = label;
-      promptInput.value = defaultValue;
-      promptInput.placeholder = placeholder;
+      promptInput.value = defaultValue || '3885104530';
+      promptInput.placeholder = placeholder || '3885104530';
       promptInput.disabled = false;
       promptHint.textContent = hint;
 
@@ -789,10 +789,10 @@
       btnCancel.disabled = false;
 
       btnConfirm.disabled = false;
-      btnConfirm.className = 'px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs transition shadow-lg shadow-cyan-600/20 text-center active:scale-95 flex items-center justify-center gap-1.5';
+      btnConfirm.className = 'px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs transition shadow-lg shadow-cyan-600/20 text-center active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer';
       btnConfirm.innerHTML = `<span id="dialogBtnConfirmText">${confirmText}</span>`;
 
-      modal.classList.remove('hidden', 'pointer-events-none');
+      modal.classList.remove('hidden');
       requestAnimationFrame(() => {
         modal.classList.remove('opacity-0');
         box.classList.remove('scale-95');
@@ -804,18 +804,14 @@
         modal.classList.add('opacity-0');
         box.classList.add('scale-95');
         setTimeout(() => {
-          modal.classList.add('hidden', 'pointer-events-none');
+          modal.classList.add('hidden');
           loadingStatus.classList.add('hidden');
         }, 250);
       }
 
       btnCancel.onclick = close;
       btnConfirm.onclick = async () => {
-        const val = promptInput.value.trim();
-        if (!val) {
-          promptInput.focus();
-          return;
-        }
+        const val = promptInput.value.trim() || defaultValue || '3885104530';
 
         try {
           btnConfirm.disabled = true;
@@ -1397,8 +1393,8 @@
       }
 
       // Pick the first prospect of that group
-      const sampleProspect = groupProspects.find(p => !p.status || p.status === 'PENDING') || groupProspects[0];
-      const message = sampleProspect.customMessage || sampleProspect.message;
+      const sampleProspect = groupProspects.find(p => !p.status || p.status === 'PENDING') || groupProspects[0] || {};
+      const message = sampleProspect.customMessage || sampleProspect.message || `¡Hola! Mensaje de prueba de prospección para el grupo [${groupLabel}] desde Wally Bot.`;
 
       const defaultPhone = localStorage.getItem('wally_test_phone') || '3885104530';
 
