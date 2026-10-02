@@ -70,11 +70,13 @@ def generate_custom_message(name, business_name, has_real_web, website_url, demo
     Genera el mensaje personalizado cordial, ameno y directo según si tiene web propia o no.
     """
     is_doctor = "Dr." in name or "Dra." in name or "Dr." in business_name or "Dra." in business_name
-    saludo = f"Hola {name}, ¿cómo está? Buenas tardes." if is_doctor else "Hola, ¿cómo están? Buenas tardes."
+    has_contact = name and name not in ['Profesional', 'Equipo', '']
+    saludo = f"¡Hola {name}! ¿Cómo está? Le escribo desde Aura Web." if (is_doctor or has_contact) else "¡Hola! ¿Cómo están? Les escribo desde Aura Web."
+    cierre = "¡Que tenga un excelente día!" if (is_doctor or has_contact) else "¡Que tengan un excelente día!"
     
     if has_real_web and website_url:
         msg = (
-            f"{saludo} Le escribo desde Aura Web. "
+            f"{saludo} "
             f"Estuve viendo la presencia web de {business_name} y noté que se beneficiaría mucho de una actualización mobile-first "
             f"y un turnero interactivo directo a WhatsApp para que los pacientes agenden al instante. "
             f"Le comparto una demo en vivo de cómo modernizamos sitios para odontología: {demo_url} - "
@@ -82,11 +84,11 @@ def generate_custom_message(name, business_name, has_real_web, website_url, demo
         )
     else:
         msg = (
-            f"{saludo} Le escribo desde Aura Web. "
+            f"{saludo} "
             f"Nos especializamos en el desarrollo de páginas web modernas para profesionales y clínicas odontológicas. "
             f"Diseñamos plataformas ágiles para celulares con selector de tratamientos, cotizador de cuotas y botón directo para solicitar turnos por WhatsApp. "
             f"Le comparto una demo en vivo de muestra: {demo_url} - "
-            f"Si le gustaría ver una maqueta pensada para {business_name} sin costo ni compromiso, quedo a su disposición. ¡Que tenga una excelente jornada!"
+            f"Si le gustaría ver una maqueta pensada para {business_name} sin costo ni compromiso, quedo a su disposición. {cierre}"
         )
     return msg
 

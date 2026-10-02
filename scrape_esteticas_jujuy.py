@@ -56,11 +56,13 @@ def is_real_website(url):
     return True
 
 def generate_custom_message(name, business_name, has_real_web, website_url, demo_url="https://auradev.online/demo/estetica/"):
-    saludo = f"Hola {name}, ¿cómo estás? Buenas tardes." if name and name != "Profesional" else "Hola, ¿cómo están? Buenas tardes."
+    has_contact = name and name not in ['Profesional', 'Equipo', '']
+    saludo = f"¡Hola {name}! ¿Cómo estás? Te escribo desde Aura Web." if has_contact else "¡Hola! ¿Cómo están? Les escribo desde Aura Web."
+    cierre = "¡Que tengas un excelente día!" if has_contact else "¡Que tengan un excelente día!"
     
     if has_real_web and website_url:
         msg = (
-            f"{saludo} Te escribo desde Aura Web. "
+            f"{saludo} "
             f"Estuvimos viendo el perfil de {business_name} y notamos que se beneficiaría mucho de una web mobile-first de alto impacto, "
             f"con cotizador interactivo de depilación láser en 3 pasos, catálogo de tratamientos y turnero directo a WhatsApp para que tus clientas reserven al instante. "
             f"Te comparto una demo en vivo de cómo diseñamos para estética: {demo_url} - "
@@ -68,11 +70,11 @@ def generate_custom_message(name, business_name, has_real_web, website_url, demo
         )
     else:
         msg = (
-            f"{saludo} Te escribo desde Aura Web. "
+            f"{saludo} "
             f"Nos especializamos en el desarrollo de páginas web modernas para centros de estética, medicina estética y spas. "
             f"Diseñamos sitios ágiles para celulares con cotizador interactivo de depilación láser, catálogo de tratamientos y botón directo para solicitar turnos por WhatsApp. "
             f"Te comparto una demo en vivo de muestra: {demo_url} - "
-            f"Si te gustaría ver una propuesta pensada para {business_name} sin costo ni compromiso, quedo a tu disposición. ¡Que tengas una excelente jornada!"
+            f"Si te gustaría ver una propuesta pensada para {business_name} sin costo ni compromiso, quedo a tu disposición. {cierre}"
         )
     return msg
 

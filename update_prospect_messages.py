@@ -1,6 +1,6 @@
 """
 Actualiza los mensajes personalizados de todos los prospectos en prospects.json y PostgreSQL
-utilizando los nuevos enlaces de demo de auradev.online:
+utilizando saludos atemporales (aptos para mañana, tarde o noche) y enlaces de auradev.online:
 - Odontología: https://auradev.online/demo/odontologia/
 - Estética & Spa: https://auradev.online/demo/estetica/
 """
@@ -20,11 +20,14 @@ BASE_URL = "https://wally_bot.dario10.pw"
 
 def generate_odonto_msg(name, business_name, has_real_web, website_url):
     is_doctor = 'Dr.' in name or 'Dra.' in name or 'Dr.' in business_name or 'Dra.' in business_name
-    saludo = f'Hola {name}, ¿cómo está? Buenas tardes.' if is_doctor else 'Hola, ¿cómo están? Buenas tardes.'
+    has_contact = name and name not in ['Profesional', 'Equipo', '']
+    saludo = f'¡Hola {name}! ¿Cómo está? Le escribo desde Aura Web.' if (is_doctor or has_contact) else '¡Hola! ¿Cómo están? Les escribo desde Aura Web.'
+    cierre = '¡Que tenga un excelente día!' if (is_doctor or has_contact) else '¡Que tengan un excelente día!'
     demo_url = 'https://auradev.online/demo/odontologia/'
+    
     if has_real_web and website_url:
         return (
-            f'{saludo} Le escribo desde Aura Web. '
+            f'{saludo} '
             f'Estuve viendo la presencia web de {business_name} y noté que se beneficiaría mucho de una actualización mobile-first '
             f'y un turnero interactivo directo a WhatsApp para que los pacientes agenden al instante. '
             f'Le comparto una demo en vivo de cómo modernizamos sitios para odontología: {demo_url} - '
@@ -32,19 +35,22 @@ def generate_odonto_msg(name, business_name, has_real_web, website_url):
         )
     else:
         return (
-            f'{saludo} Le escribo desde Aura Web. '
+            f'{saludo} '
             f'Nos especializamos en el desarrollo de páginas web modernas para profesionales y clínicas odontológicas. '
             f'Diseñamos plataformas ágiles para celulares con selector de tratamientos, cotizador de cuotas y botón directo para solicitar turnos por WhatsApp. '
             f'Le comparto una demo en vivo de muestra: {demo_url} - '
-            f'Si le gustaría ver una maqueta pensada para {business_name} sin costo ni compromiso, quedo a su disposición. ¡Que tenga una excelente jornada!'
+            f'Si le gustaría ver una maqueta pensada para {business_name} sin costo ni compromiso, quedo a su disposición. {cierre}'
         )
 
 def generate_estetica_msg(name, business_name, has_real_web, website_url):
-    saludo = f'Hola {name}, ¿cómo estás? Buenas tardes.' if name and name != 'Profesional' else 'Hola, ¿cómo están? Buenas tardes.'
+    has_contact = name and name not in ['Profesional', 'Equipo', '']
+    saludo = f'¡Hola {name}! ¿Cómo estás? Te escribo desde Aura Web.' if has_contact else '¡Hola! ¿Cómo están? Les escribo desde Aura Web.'
+    cierre = '¡Que tengas un excelente día!' if has_contact else '¡Que tengan un excelente día!'
     demo_url = 'https://auradev.online/demo/estetica/'
+    
     if has_real_web and website_url:
         return (
-            f'{saludo} Te escribo desde Aura Web. '
+            f'{saludo} '
             f'Estuvimos viendo el perfil de {business_name} y notamos que se beneficiaría mucho de una web mobile-first de alto impacto, '
             f'con cotizador interactivo de depilación láser en 3 pasos, catálogo de tratamientos y turnero directo a WhatsApp para que tus clientas reserven al instante. '
             f'Te comparto una demo en vivo de cómo diseñamos para estética: {demo_url} - '
@@ -52,11 +58,11 @@ def generate_estetica_msg(name, business_name, has_real_web, website_url):
         )
     else:
         return (
-            f'{saludo} Te escribo desde Aura Web. '
+            f'{saludo} '
             f'Nos especializamos en el desarrollo de páginas web modernas para centros de estética, medicina estética y spas. '
             f'Diseñamos sitios ágiles para celulares con cotizador interactivo de depilación láser, catálogo de tratamientos y botón directo para solicitar turnos por WhatsApp. '
             f'Te comparto una demo en vivo de muestra: {demo_url} - '
-            f'Si te gustaría ver una propuesta pensada para {business_name} sin costo ni compromiso, quedo a tu disposición. ¡Que tengas una excelente jornada!'
+            f'Si te gustaría ver una propuesta pensada para {business_name} sin costo ni compromiso, quedo a tu disposición. {cierre}'
         )
 
 def main():
@@ -86,8 +92,8 @@ def main():
         json.dump(prospects, f, indent=2, ensure_ascii=False)
 
     print(f"[OK] Actualizados en prospects.json:")
-    print(f"  - Odontología: {odonto_count} prospectos")
-    print(f"  - Estética & Spa: {estetica_count} prospectos")
+    print(f"  - Odontología: {odonto_count} prospectos con saludo general atemporal")
+    print(f"  - Estética & Spa: {estetica_count} prospectos con saludo general atemporal")
 
     # Sincronizar con API y PostgreSQL
     try:
