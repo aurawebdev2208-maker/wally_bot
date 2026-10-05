@@ -321,13 +321,14 @@ class WhatsAppManager {
     }
 
     try {
-      // Simular presencia humana (typing / escribiendo...)
+      // Simular presencia humana realista (typing / escribiendo...)
       const simulateTyping = options.simulateTyping !== false;
       if (simulateTyping) {
         await this.sock.sendPresenceUpdate('composing', jid);
-        const typingDelay = Math.min(Math.max(text.length * 20, 1500), 4000);
+        const typingDelay = Math.floor(Math.random() * 2500) + 3500; // 3.5 a 6.0 segundos
         await delay(typingDelay);
         await this.sock.sendPresenceUpdate('paused', jid);
+        await delay(500); // Micro-pausa natural antes del envío
       }
 
       const result = await this.sock.sendMessage(jid, { text });

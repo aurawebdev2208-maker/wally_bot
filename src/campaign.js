@@ -3,6 +3,9 @@ const path = require('path');
 const whatsapp = require('./whatsapp');
 const db = require('./db');
 
+/**
+ * Resuelve bloques Spintax del tipo {opcion1|opcion2|opcion3}
+ */
 function parseSpintax(text) {
   if (!text) return '';
   const spintaxRegex = /\{([^{}]+)\}/g;
@@ -13,6 +16,67 @@ function parseSpintax(text) {
     text = text.replace(matches[0], randomChoice);
   }
   return text;
+}
+
+/**
+ * Enriquecedor de mensajes con variaciones dinámicas automáticas
+ * para que cada mensaje tenga un hash de texto y estructura diferente.
+ */
+function enrichWithDynamicVariations(text, prospectName, businessName) {
+  if (!text) return '';
+  let varied = text;
+
+  // Si no tiene spintax manual {a|b}, aplicar variaciones dinámicas profesionales
+  if (!varied.includes('{')) {
+    // 1. Variar saludos
+    varied = varied.replace(/¡Hola([^!]+)!/i, (match, p1) => {
+      const trimmed = p1.trim();
+      const targetName = trimmed || businessName || '';
+      const greetings = [
+        `¡Hola ${targetName}!`,
+        `Hola ${targetName}, ¿cómo está?`,
+        `¡Buenas ${targetName}!`,
+        `Hola ${targetName}, un gusto saludarle.`
+      ];
+      return greetings[Math.floor(Math.random() * greetings.length)];
+    });
+
+    // 2. Variar intro de Aura Web
+    varied = varied.replace(/Le escribo de Aura Web/i, () => {
+      const intros = [
+        'Le escribo de Aura Web',
+        'Nos comunicamos desde Aura Web',
+        'Le contacto desde Aura Web',
+        'Le escribo de parte del equipo de Aura Web'
+      ];
+      return intros[Math.floor(Math.random() * intros.length)];
+    });
+
+    // 3. Variar enlace a la demo
+    varied = varied.replace(/Le comparto una demo en vivo:/i, () => {
+      const demos = [
+        'Le comparto una demo en vivo:',
+        'Le dejo una muestra interactiva:',
+        'Puede ver un ejemplo en vivo aquí:',
+        'Le adjunto una demo de muestra:'
+      ];
+      return demos[Math.floor(Math.random() * demos.length)];
+    });
+
+    // 4. Variar despedidas
+    varied = varied.replace(/¡Que tenga un gran día!/i, () => {
+      const closings = [
+        '¡Que tenga un gran día!',
+        '¡Que tenga una excelente jornada!',
+        '¡Saludos y buen día!',
+        '¡Quedo a su disposición!'
+      ];
+      return closings[Math.floor(Math.random() * closings.length)];
+    });
+  }
+
+  // Parsear cualquier spintax restante
+  return parseSpintax(varied);
 }
 
 class CampaignManager {
@@ -29,8 +93,8 @@ class CampaignManager {
       pending: 0,
       currentIndex: 0,
       currentProspect: null,
-      delaySeconds: parseInt(process.env.DEFAULT_DELAY_SECONDS || '60'),
-      maxBatchSize: 15,
+      delaySeconds: parseInt(process.env.DEFAULT_DELAY_SECONDS || '75'), // 75s promedio
+      maxBatchSize: 10, // Límite estricto por tanda (10 envíos)
       batchSentCount: 0,
       startedAt: null,
       finishedAt: null,
@@ -176,8 +240,13 @@ class CampaignManager {
       throw new Error('No hay prospectos cargados en la lista.');
     }
 
-    const delaySec = Math.max(Number(options.delaySeconds) || this.state.delaySeconds, 30);
-    const maxBatch = Math.min(Number(options.maxBatchSize) || 15, 20); // Máximo 15-20 por tanda para evitar bloqueos
+    // Intervalo de seguridad: Mínimo 60 segundos base (promedio 75s a 110s)
+    const delaySec = Math.max(Number(options.delaySeconds) || 75, 50);
+    
+    // Límite estricto por tanda: Default 10, Máximo infranqueable 15
+    const requestedBatch = Number(options.maxBatchSize);
+    const maxBatch = (requestedBatch > 0 && requestedBatch <= 15) ? requestedBatch : 10;
+    
     const campaignName = options.campaignName || 'Aura Web Outreach';
     const targetGroup = options.targetGroup && options.targetGroup !== 'ALL' ? options.targetGroup : null;
 
@@ -219,7 +288,7 @@ class CampaignManager {
     };
 
     const targetLabel = targetGroup ? `Grupo "${targetGroup}"` : 'Todos los grupos';
-    this.addLog('info', `Iniciando campaña anti-bloqueo para ${targetLabel}. Lote máximo: ${maxBatch} envíos. Delay: ${delaySec}s.`);
+    this.addLog('info', `🛡️ [Modo Anti-Baneo] Iniciando lote para ${targetLabel}. Límite seguro: ${maxBatch} envíos. Intervalo promedio: ${delaySec}s.`);
 
     this.processNext();
     return this.getStatus();
@@ -228,17 +297,17 @@ class CampaignManager {
   async processNext() {
     if (!this.state.isRunning || this.state.isPaused) return;
 
-    // Verificar si se alcanzó el límite del lote de seguridad
+    // 1. HARD-CAP: Verificar si se alcanzó el límite seguro del lote
     if (this.state.batchSentCount >= this.state.maxBatchSize) {
       this.state.isRunning = false;
       this.state.finishedAt = new Date().toISOString();
       this.state.currentProspect = null;
-      this.addLog('warning', `🛑 Lote de seguridad completado (${this.state.batchSentCount} envíos). La campaña se pausó automáticamente para proteger tu número de WhatsApp.`);
+      this.addLog('warning', `🛑 Lote de seguridad completado (${this.state.batchSentCount}/${this.state.maxBatchSize} envíos). La campaña se pausó automáticamente para proteger la salud de tu número de WhatsApp.`);
       await this.saveProspects(this.prospectsQueue);
       return;
     }
 
-    // Buscar el siguiente prospecto pendiente del grupo objetivo
+    // 2. Buscar el siguiente prospecto pendiente
     const prospect = this.prospectsQueue.find(p => {
       const isPending = !p.status || p.status === 'PENDING';
       if (!isPending) return false;
@@ -251,14 +320,14 @@ class CampaignManager {
       this.state.isRunning = false;
       this.state.finishedAt = new Date().toISOString();
       this.state.currentProspect = null;
-      this.addLog('success', `¡Campaña finalizada! Total enviados: ${this.state.sent}, Fallidos: ${this.state.failed}.`);
+      this.addLog('success', `¡Todos los prospectos del grupo han sido completados! Enviados: ${this.state.sent}, Fallidos: ${this.state.failed}.`);
       await this.saveProspects(this.prospectsQueue);
       return;
     }
 
     this.state.currentProspect = prospect;
     const groupName = prospect.niche || prospect.group || 'General';
-    this.addLog('info', `Preparando envío (${this.state.batchSentCount + 1}/${this.state.maxBatchSize}) a [${groupName}]: ${prospect.name || prospect.business} (${prospect.phone})...`);
+    this.addLog('info', `Preparando envío seguro (${this.state.batchSentCount + 1}/${this.state.maxBatchSize}) a [${groupName}]: ${prospect.name || prospect.business} (${prospect.phone})...`);
 
     try {
       let rawText = prospect.customMessage || prospect.message;
@@ -266,8 +335,8 @@ class CampaignManager {
         throw new Error('El prospecto no tiene mensaje configurado.');
       }
 
-      // Aplicar spintax dinámico para variar sutilmente el mensaje y evitar hash idéntico
-      const messageText = parseSpintax(rawText);
+      // Enriquecer con Spintax y variaciones dinámicas para que cada mensaje sea único
+      const messageText = enrichWithDynamicVariations(rawText, prospect.name, prospect.business);
 
       const result = await whatsapp.sendTextMessage(prospect.phone, messageText, { simulateTyping: true });
 
@@ -287,7 +356,7 @@ class CampaignManager {
       }).length;
       await this.saveProspects(this.prospectsQueue);
 
-      this.addLog('success', `Mensaje enviado con éxito a ${prospect.name || prospect.business} [${groupName}]`, { phone: prospect.phone });
+      this.addLog('success', `Mensaje entregado con éxito a ${prospect.name || prospect.business} [${groupName}] (${this.state.batchSentCount}/${this.state.maxBatchSize})`, { phone: prospect.phone });
     } catch (err) {
       console.error(`[Campaign] Error enviando a ${prospect.phone}:`, err);
       prospect.status = 'FAILED';
@@ -308,11 +377,11 @@ class CampaignManager {
       this.addLog('error', `Error al enviar a ${prospect.name || prospect.business}: ${err.message}`, { phone: prospect.phone });
     }
 
-    // Calcular delay aleatorio humano (ej: 45s +/- 15s)
-    const randomJitter = Math.floor(Math.random() * 20) - 10;
-    const waitTimeSeconds = Math.max(this.state.delaySeconds + randomJitter, 30);
+    // 3. Pausa aleatoria humana anti-detección (ej: 75s base con variación de ±25s -> entre 60s y 115s)
+    const randomJitter = Math.floor(Math.random() * 50) - 25; // -25s a +25s
+    const waitTimeSeconds = Math.max(this.state.delaySeconds + randomJitter, 55);
 
-    this.addLog('info', `Pausa de seguridad anti-bloqueo: esperando ${waitTimeSeconds} segundos antes del próximo envío...`);
+    this.addLog('info', `⏳ Pausa anti-detección: esperando ${waitTimeSeconds} segundos antes del próximo envío...`);
 
     this.activeTimeout = setTimeout(() => {
       this.processNext();

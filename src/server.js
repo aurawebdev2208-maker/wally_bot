@@ -260,8 +260,8 @@ app.get('/api/campaign/status', (req, res) => {
 
 app.post('/api/campaign/start', async (req, res) => {
   try {
-    const { delaySeconds, campaignName, targetGroup } = req.body;
-    const result = await campaign.start({ delaySeconds, campaignName, targetGroup });
+    const { delaySeconds, maxBatchSize, campaignName, targetGroup } = req.body;
+    const result = await campaign.start({ delaySeconds, maxBatchSize, campaignName, targetGroup });
     res.json({ success: true, data: result });
   } catch (err) {
     res.status(400).json({ success: false, error: err.message });
