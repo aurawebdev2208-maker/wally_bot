@@ -135,13 +135,10 @@ class CampaignManager {
   }
 
   normalizeMacroNiche(nicheStr) {
-    if (!nicheStr) return 'General';
+    if (!nicheStr) return 'Estética & Spa';
     const n = nicheStr.toLowerCase();
     if (n.includes('dent') || n.includes('odont') || n.includes('ortodon') || n.includes('dient') || n.includes('implante') || n.includes('dental')) {
       return 'Odontología';
-    }
-    if (n.includes('estet') || n.includes('spa') || n.includes('facial') || n.includes('corporal') || n.includes('cosmet') || n.includes('depil') || n.includes('belleza')) {
-      return 'Estética & Spa';
     }
     if (n.includes('inmob') || n.includes('alquiler') || n.includes('propiedad') || n.includes('lote') || n.includes('bienes')) {
       return 'Inmobiliaria';
@@ -149,7 +146,7 @@ class CampaignManager {
     if (n.includes('caban') || n.includes('turism') || n.includes('hotel') || n.includes('hospedaje') || n.includes('suite')) {
       return 'Turismo & Cabañas';
     }
-    return nicheStr.trim();
+    return 'Estética & Spa';
   }
 
   async saveProspects(prospects) {
